@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>批量添加水印工具</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #watermark-tool {
+            max-width: 100%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #watermark-tool h1 {
+            text-align: center;
+            color: #333;
+        }
+        /* 自定义文件选择按钮样式 */
+        #custom-file-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        #custom-file-button:hover {
+            background-color: #0056b3;
+        }
+        /* 主内容区域 */
+        #main-content {
+            display: flex;
+            height: calc(100vh - 300px); /* 根据需要调整高度 */
+        }
+        /* 控件区域样式 */
+        #left-controls, #right-controls {
+            flex: 0 0 220px; /* 固定宽度 */
+            overflow-y: auto;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        /* 调整预览区域的宽度 */
+        #preview-container {
+            flex: 1; /* 占据剩余空间 */
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .control-group {
+            margin-bottom: 20px;
+        }
+        .control-group h3 {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .control-group h4 {
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        .control-group label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        .control-group input[type="range"],
+        .control-group input[type="color"],
+        .control-group select,
+        .control-group input[type="number"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .slider-value {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+            margin-left: 10px;
+        }
+        /* 调整输入框和单位符号的位置 */
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+        .input-group input[type="number"] {
+            width: 50px;
+            padding: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .input-group span {
+            margin-left: 5px;
+        }
+        /* 按钮样式 */
+        .action-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+        .action-button:hover {
+            background-color: #218838;
+        }
+        .small-button {
+            padding: 10px 15px;
+            margin: 5px 0;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.3s;
+        }
+        .small-button.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .small-button:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        /* 进度条样式 */
+        #progress-bar {
+            width: 100%;
+            background-color: #ccc;
+            margin: 10px 0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        #progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background-color: #28a745;
+            transition: width 0.3s;
+        }
+        /* Swiper 样式 */
+        .swiper-container {
+            width: 100%;
+            height: auto;
+        }
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+        }
+        .swiper-pagination {
+            position: relative;
+            margin-top: 10px;
+        }
+        /* Canvas 样式 */
+        #canvas-container {
+            position: relative;
+            width: 100%;
+            height: auto;
+            overflow: hidden;
+        }
+        #canvas-container canvas {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+        /* 水印预览样式 */
+        #watermark-preview-container {
+            display: flex;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+            height: 60px;
+        }
+        .watermark-preview {
+            width: 50px;
+            height: 50px;
+            margin-right: 5px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            transition: border-color 0.3s;
+        }
+        .watermark-preview:hover {
+            border-color: #007bff;
+        }
+        .watermark-preview.selected {
+            border-color: #007bff;
+        }
+        /* 折叠部分样式 */
+        .collapsible {
+            background-color: #f1f1f1;
+            cursor: pointer;
+            padding: 5px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+        .collapsible:hover {
+            background-color: #ccc;
+        }
+        .active {
+            background-color: #ccc;
+        }
+        .content {
+            padding: 0 5px;
+            display: none;
+            overflow: hidden;
+        }
+        .content.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* 水印库列表样式 */
+        #watermark-list {
+            margin-top: 10px;
+        }
+        .watermark-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: move;
+            transition: background-color 0.3s;
+        }
+        .watermark-item:hover {
+            background-color: #f9f9f9;
+        }
+        .watermark-thumbnail {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+        }
+        .watermark-item button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        /* 绘制水印画布样式 */
+        #drawing-canvas {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            margin-bottom: 10px;
+        }
+        /* 文字水印输入框样式 */
+        #text-watermark-input {
+            width: 100%;
+            padding: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        /* 水印库管理按钮组样式 */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .button-group .small-button {
+            flex: 1;
+            margin-right: 5px;
+        }
+        .button-group .small-button:last-child {
+            margin-right: 0;
+        }
+        /* 隐藏的文件选择控件 */
+        #watermark-upload-input,
+        #preset-import-input {
+            display: none;
+        }
+    </style>
+    <!-- 引入 Swiper 的 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+    <!-- 引入 SortableJS 的 CSS -->
+    <style>
+        .sortable-ghost {
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Open PDF Manual</title>
+</head>
+<body>
+    <!-- 打开说明书按钮 -->
+    <button onclick="openPDF()">打开说明书 </button>
+
+    <script>
+        function openPDF() {
+            // 这里填写说明书的相对路径
+            const pdfPath = "manual.pdf"; // 或者 "../folder/manual.pdf"
+            window.open(pdfPath, "_blank");
+        }
+    </script>
+</body>
+</html>
+
+<body>
+    <div id="watermark-tool">
+        <h1>批量添加水印工具</h1>
+        <!-- 隐藏的文件选择控件 -->
+        <input type="file" id="image-input" accept="image/*" multiple style="display:none;">
+        <!-- 自定义文件选择按钮 -->
+        <button id="custom-file-button">选择图片</button>
+
+        <!-- 水印库管理 -->
+        <div id="watermark-library">
+            <button type="button" class="collapsible active">水印库管理</button>
+            <div class="content show">
+                <!-- 水印库管理工具 -->
+                <div class="button-group">
+                    <button id="upload-watermark-button" class="small-button">上传水印</button>
+                    <button id="draw-watermark-button" class="small-button">绘制水印</button>
+                    <button id="text-watermark-button" class="small-button">文字水印</button>
+                </div>
+                <!-- 绘制水印的弹窗 -->
+                <div id="draw-watermark-modal" style="display:none;">
+                    <canvas id="drawing-canvas" width="300" height="150"></canvas>
+                    <button id="save-drawing-button" class="small-button">保存绘制水印</button>
+                    <button id="cancel-drawing-button" class="small-button">取消</button>
+                </div>
+                <!-- 文字水印的弹窗 -->
+                <div id="text-watermark-modal" style="display:none;">
+                    <label for="text-watermark-input">输入文字：</label>
+                    <input type="text" id="text-watermark-input" placeholder="请输入水印文字">
+                    <label for="font-select">选择字体：</label>
+                    <select id="font-select">
+                        <option value="Amsterdam Four">Amsterdam Four</option>
+                        <option value="Stephen Type">Stephen Type</option>
+                        <!-- 添加其他字体选项 -->
+                    </select>
+                    <label for="font-size-input">字体大小：</label>
+                    <input type="number" id="font-size-input" value="48" min="10" max="200">
+                    <button id="save-text-button" class="small-button">保存文字水印</button>
+                    <button id="cancel-text-button" class="small-button">取消</button>
+                </div>
+                <div id="watermark-list">
+                    <!-- 动态生成水印列表，支持拖拽排序 -->
+                </div>
+                <!-- 隐藏的文件选择控件（用于上传水印） -->
+                <input type="file" id="watermark-upload-input" accept="image/*">
+            </div>
+        </div>
+
+        <!-- 进度条 -->
+        <div id="progress-bar">
+            <div id="progress-bar-inner"></div>
+        </div>
+        <!-- 主内容区域 -->
+        <div id="main-content">
+            <!-- 左侧：参数调整 -->
+            <div id="left-controls">
+                <!-- 参数调整的控件 -->
+                <div class="control-group">
+                    <h3>调整参数</h3>
+                    <label for="position-select">水印位置：</label>
+                    <select id="position-select">
+                        <option value="bottom-center">底部居中</option>
+                        <option value="bottom-left">左下角</option>
+                        <option value="bottom-right">右下角</option>
+                        <option value="top-center">顶部居中</option>
+                        <option value="top-left">左上角</option>
+                        <option value="top-right">右上角</option>
+                    </select>
+                    <label for="scale-slider">缩放比例：</label>
+                    <div class="input-group">
+                        <input type="number" id="scale-input" value="20" min="10" max="100">
+                        <span>%</span>
+                    </div>
+                    <input type="range" id="scale-slider" min="10" max="100" value="20">
+                    <label for="rotation-slider">旋转角度：</label>
+                    <div class="input-group">
+                        <input type="number" id="rotation-input" value="0" min="-180" max="180">
+                        <span>°</span>
+                    </div>
+                    <input type="range" id="rotation-slider" min="-180" max="180" value="0">
+                    <label for="offset-x-slider">水平偏移：</label>
+                    <div class="input-group">
+                        <input type="number" id="offset-x-input" value="0" min="-1000" max="1000">
+                        <span>px</span>
+                    </div>
+                    <input type="range" id="offset-x-slider" min="-1000" max="1000" value="0">
+                    <label for="offset-y-slider">垂直偏移：</label>
+                    <div class="input-group">
+                        <input type="number" id="offset-y-input" value="0" min="-1000" max="1000">
+                        <span>px</span>
+                    </div>
+                    <input type="range" id="offset-y-slider" min="-1000" max="1000" value="0">
+                    <label for="opacity-slider">透明度：</label>
+                    <div class="input-group">
+                        <input type="number" id="opacity-input" value="100" min="0" max="100">
+                        <span>%</span>
+                    </div>
+                    <input type="range" id="opacity-slider" min="0" max="100" value="100">
+                </div>
+                <!-- 操作按钮 -->
+                <div class="control-group">
+                    <h3>操作</h3>
+                    <button id="undo-button" class="small-button">撤销</button>
+                    <button id="redo-button" class="small-button">还原</button>
+                    <button id="download-current-button" class="action-button">保存当前照片</button>
+                    <button id="download-all-button" class="action-button">保存所有照片</button>
+                </div>
+            </div>
+            <!-- 中间：照片查看区域 -->
+            <div id="preview-container">
+                <!-- Swiper 容器 -->
+                <div id="canvas-container" class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <!-- 这里动态添加每个canvas的swiper-slide -->
+                    </div>
+                    <!-- 添加分页器 -->
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+            <!-- 右侧：签名设置、预设管理 -->
+            <div id="right-controls">
+                <!-- 签名设置 -->
+                <div class="control-group">
+                    <h3>签名设置</h3>
+                    <label>签名颜色：</label>
+                    <button id="color-black-button" class="small-button">黑色</button>
+                    <button id="color-white-button" class="small-button">白色</button>
+                    <label for="color-picker">自定义颜色：</label>
+                    <input type="color" id="color-picker" value="#000000">
+                    <label>
+                        <input type="checkbox" id="shadow-checkbox">
+                        添加阴影
+                    </label>
+                    <!-- 水印选择预览 -->
+                    <h4>水印选择</h4>
+                    <div id="watermark-preview-container">
+                        <!-- 水印预览滑动框 -->
+                    </div>
+                </div>
+                <!-- 预设管理 -->
+                <div class="control-group">
+                    <h3>预设管理</h3>
+                    <label for="preset-name-input">预设名称：</label>
+                    <input type="text" id="preset-name-input" placeholder="输入预设名称">
+                    <div class="button-group">
+                        <button id="save-preset-button" class="small-button">保存预设</button>
+                        <button id="export-preset-button" class="small-button">导出预设</button>
+                    </div>
+                    <label for="preset-select">选择预设：</label>
+                    <select id="preset-select">
+                        <option value="">选择预设</option>
+                    </select>
+                    <div class="button-group">
+                        <button id="load-preset-button" class="small-button">加载预设</button>
+                        <button id="delete-preset-button" class="small-button">删除预设</button>
+                        <button id="import-preset-button" class="small-button">导入预设</button>
+                    </div>
+                    <input type="file" id="preset-import-input" accept=".json">
+                    <button id="apply-previous-button" class="small-button">使用上一张照片设置</button>
+                    <button id="apply-all-button" class="small-button">应用到全部</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 引入 JSZip 和 FileSaver.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+        <!-- 引入 Swiper 的 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+        <!-- 引入 SortableJS 的 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+        <!-- 引入 Signature Pad 的 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+        <!-- 引入字体 -->
+        <link href="https://fonts.googleapis.com/css2?family=Handlee&display=swap" rel="stylesheet">
+        <style>
+            @font-face {
+                font-family: 'Amsterdam Four';
+                src: url('fonts/AmsterdamFour.ttf') format('truetype');
+            }
+            @font-face {
+                font-family: 'Stephen Type';
+                src: url('fonts/StephenType.ttf') format('truetype');
+            }
+        </style>
+
+        <script>
+            // 全局变量
+            let processedImages = [];
+            let imageFiles = [];
+            let watermarkImages = []; // 水印图片数组
+            let canvasList = [];
+            let currentIndex = 0;
+            let swiper;
+            let actionHistory = [];
+            let redoStack = [];
+            let defaultWatermarkIndex = 0; // 默认水印索引
+
+            // 初始化水印库
+            updateWatermarkList();
+
+            // 事件监听器
+            document.getElementById('custom-file-button').addEventListener('click', () => {
+                document.getElementById('image-input').click();
+            });
+            document.getElementById('image-input').addEventListener('change', function() {
+                const files = this.files;
+                if (files.length > 0) {
+                    document.getElementById('custom-file-button').textContent = '已选择 ' + files.length + ' 张图片';
+                    processImages(); // 自动开始处理
+                } else {
+                    document.getElementById('custom-file-button').textContent = '选择图片';
+                }
+            });
+
+            document.getElementById('download-current-button').addEventListener('click', downloadCurrentImage);
+            document.getElementById('download-all-button').addEventListener('click', downloadAllImages);
+            document.getElementById('position-select').addEventListener('change', updatePosition);
+
+            // 缩放比例滑块和输入框同步
+            document.getElementById('scale-slider').addEventListener('input', function() {
+                document.getElementById('scale-input').value = this.value;
+                updateScale();
+            });
+            document.getElementById('scale-input').addEventListener('input', function() {
+                let value = parseInt(this.value);
+                if (value < 10) value = 10;
+                if (value > 100) value = 100;
+                this.value = value;
+                document.getElementById('scale-slider').value = value;
+                updateScale();
+            });
+
+            // 旋转角度滑块和输入框同步
+            document.getElementById('rotation-slider').addEventListener('input', function() {
+                document.getElementById('rotation-input').value = this.value;
+                updateRotation();
+            });
+            document.getElementById('rotation-input').addEventListener('input', function() {
+                let value = parseInt(this.value);
+                if (value < -180) value = -180;
+                if (value > 180) value = 180;
+                this.value = value;
+                document.getElementById('rotation-slider').value = value;
+                updateRotation();
+            });
+
+            // 偏移X滑块和输入框同步
+            document.getElementById('offset-x-slider').addEventListener('input', function() {
+                document.getElementById('offset-x-input').value = this.value;
+                updateOffsetX();
+            });
+            document.getElementById('offset-x-input').addEventListener('input', function() {
+                let value = parseInt(this.value);
+                if (value < -1000) value = -1000;
+                if (value > 1000) value = 1000;
+                this.value = value;
+                document.getElementById('offset-x-slider').value = value;
+                updateOffsetX();
+            });
+
+            // 偏移Y滑块和输入框同步
+            document.getElementById('offset-y-slider').addEventListener('input', function() {
+                document.getElementById('offset-y-input').value = this.value;
+                updateOffsetY();
+            });
+            document.getElementById('offset-y-input').addEventListener('input', function() {
+                let value = parseInt(this.value);
+                if (value < -1000) value = -1000;
+                if (value > 1000) value = 1000;
+                this.value = value;
+                document.getElementById('offset-y-slider').value = value;
+                updateOffsetY();
+            });
+
+            // 透明度滑块和输入框同步
+            document.getElementById('opacity-slider').addEventListener('input', function() {
+                document.getElementById('opacity-input').value = this.value;
+                updateOpacity();
+            });
+            document.getElementById('opacity-input').addEventListener('input', function() {
+                let value = parseInt(this.value);
+                if (value < 0) value = 0;
+                if (value > 100) value = 100;
+                this.value = value;
+                document.getElementById('opacity-slider').value = value;
+                updateOpacity();
+            });
+
+            document.getElementById('color-black-button').addEventListener('click', () => {
+                setColorOption('#000000');
+            });
+            document.getElementById('color-white-button').addEventListener('click', () => {
+                setColorOption('#FFFFFF');
+            });
+            document.getElementById('color-picker').addEventListener('input', () => {
+                setColorOption(document.getElementById('color-picker').value);
+            });
+            document.getElementById('shadow-checkbox').addEventListener('change', function() {
+                const params = canvasList[currentIndex];
+                const previousShadow = params.shadowEnabled;
+                params.shadowEnabled = this.checked;
+                updateCurrentPreview();
+                recordAction({
+                    type: 'shadowChange',
+                    index: currentIndex,
+                    previousParams: { shadowEnabled: previousShadow }
+                });
+            });
+            document.getElementById('apply-previous-button').addEventListener('click', applyPreviousSettings);
+            document.getElementById('apply-all-button').addEventListener('click', applyToAll);
+            document.getElementById('undo-button').addEventListener('click', undo);
+            document.getElementById('redo-button').addEventListener('click', redo);
+            document.getElementById('save-preset-button').addEventListener('click', savePreset);
+            document.getElementById('load-preset-button').addEventListener('click', loadPreset);
+            document.getElementById('delete-preset-button').addEventListener('click', deletePreset);
+            document.getElementById('export-preset-button').addEventListener('click', exportPreset);
+            document.getElementById('import-preset-button').addEventListener('click', () => {
+                document.getElementById('preset-import-input').click();
+            });
+            document.getElementById('preset-import-input').addEventListener('change', importPreset);
+
+            // 键盘事件监听器
+            document.addEventListener('keydown', function(event) {
+                if (event.target.tagName.toLowerCase() === 'input') {
+                    // 如果焦点在输入框中，忽略键盘事件
+                    return;
+                }
+                if (event.key === 'ArrowLeft') {
+                    // 向左切换照片
+                    if (currentIndex > 0) {
+                        swiper.slidePrev();
+                    }
+                } else if (event.key === 'ArrowRight') {
+                    // 向右切换照片
+                    if (currentIndex < canvasList.length - 1) {
+                        swiper.slideNext();
+                    }
+                } else if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+                    if (event.shiftKey) {
+                        // 还原
+                        redo();
+                    } else {
+                        // 撤销
+                        undo();
+                    }
+                }
+            });
+
+            // 折叠水印库管理
+            const coll = document.getElementsByClassName('collapsible');
+            for (let i = 0; i < coll.length; i++) {
+                coll[i].addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.display === 'block' || content.classList.contains('show')) {
+                        content.style.display = 'none';
+                        content.classList.remove('show');
+                    } else {
+                        content.style.display = 'block';
+                        content.classList.add('show');
+                    }
+                });
+            }
+
+            // 初始化 SortableJS
+            const watermarkListDiv = document.getElementById('watermark-list');
+            const sortable = new Sortable(watermarkListDiv, {
+                animation: 150,
+                onEnd: function (evt) {
+                    let watermarks = JSON.parse(localStorage.getItem('watermarks')) || [];
+                    const movedItem = watermarks.splice(evt.oldIndex, 1)[0];
+                    watermarks.splice(evt.newIndex, 0, movedItem);
+                    localStorage.setItem('watermarks', JSON.stringify(watermarks));
+                    updateWatermarkList();
+                }
+            });
+
+            // 水印库管理相关函数
+            document.getElementById('upload-watermark-button').addEventListener('click', () => {
+                document.getElementById('watermark-upload-input').click();
+            });
+
+            document.getElementById('watermark-upload-input').addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = new Image();
+                        img.onload = function() {
+                            // 检查是否需要去除背景
+                            const processedImgDataUrl = removeBackground(img);
+                            saveWatermark(processedImgDataUrl);
+                            updateWatermarkList();
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            function removeBackground(img) {
+                // 创建临时 Canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                // 获取图像数据
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // 假设背景为纯白色，设置透明度为0
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240) {
+                        data[i + 3] = 0;
+                    }
+                }
+                ctx.putImageData(imageData, 0, 0);
+                return canvas.toDataURL('image/png');
+            }
+
+            function saveWatermark(dataUrl) {
+                let watermarks = JSON.parse(localStorage.getItem('watermarks')) || [];
+                watermarks.push(dataUrl);
+                localStorage.setItem('watermarks', JSON.stringify(watermarks));
+            }
+
+            function updateWatermarkList() {
+                const watermarkListDiv = document.getElementById('watermark-list');
+                watermarkListDiv.innerHTML = '';
+
+                let watermarks = JSON.parse(localStorage.getItem('watermarks')) || [];
+
+                // 加载水印图片数组
+                watermarkImages = watermarks.map(dataUrl => {
+                    const img = new Image();
+                    img.src = dataUrl;
+                    return img;
+                });
+
+                // 如果没有水印，使用默认的 signature.png
+                if (watermarks.length === 0) {
+                    const defaultWatermark = 'signature.png';
+                    const img = new Image();
+                    img.src = defaultWatermark;
+                    watermarkImages.push(img);
+                    watermarks.push(defaultWatermark);
+                }
+
+                // 生成水印列表
+                watermarks.forEach((dataUrl, index) => {
+                    const watermarkDiv = document.createElement('div');
+                    watermarkDiv.className = 'watermark-item';
+                    watermarkDiv.setAttribute('data-id', index); // 为拖拽排序提供索引
+
+                    const img = document.createElement('img');
+                    img.src = dataUrl;
+                    img.className = 'watermark-thumbnail';
+                    watermarkDiv.appendChild(img);
+
+                    // 删除按钮
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '删除';
+                    deleteButton.addEventListener('click', () => {
+                        deleteWatermark(index);
+                    });
+                    watermarkDiv.appendChild(deleteButton);
+
+                    // 下载按钮
+                    const downloadButton = document.createElement('button');
+                    downloadButton.textContent = '下载';
+                    downloadButton.addEventListener('click', () => {
+                        downloadWatermark(dataUrl);
+                    });
+                    watermarkDiv.appendChild(downloadButton);
+
+                    watermarkListDiv.appendChild(watermarkDiv);
+                });
+
+                updateWatermarkPreview();
+            }
+
+            function deleteWatermark(index) {
+                if (confirm('确定要删除该水印吗？')) {
+                    let watermarks = JSON.parse(localStorage.getItem('watermarks')) || [];
+                    watermarks.splice(index, 1);
+                    localStorage.setItem('watermarks', JSON.stringify(watermarks));
+                    updateWatermarkList();
+                }
+            }
+
+            function downloadWatermark(dataUrl) {
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = 'watermark.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            // 绘制水印功能
+            document.getElementById('draw-watermark-button').addEventListener('click', () => {
+                showDrawingCanvas();
+            });
+
+            function showDrawingCanvas() {
+                const modal = document.getElementById('draw-watermark-modal');
+                modal.style.display = 'block';
+
+                const canvas = document.getElementById('drawing-canvas');
+                const signaturePad = new SignaturePad(canvas);
+
+                document.getElementById('save-drawing-button').addEventListener('click', function() {
+                    if (signaturePad.isEmpty()) {
+                        alert('请先绘制签名。');
+                        return;
+                    }
+                    const dataUrl = signaturePad.toDataURL('image/png');
+                    saveWatermark(dataUrl);
+                    updateWatermarkList();
+                    signaturePad.clear();
+                    modal.style.display = 'none';
+                });
+
+                document.getElementById('cancel-drawing-button').addEventListener('click', function() {
+                    signaturePad.clear();
+                    modal.style.display = 'none';
+                });
+            }
+
+            // 文字水印功能
+            document.getElementById('text-watermark-button').addEventListener('click', () => {
+                showTextWatermarkModal();
+            });
+
+            function showTextWatermarkModal() {
+                const modal = document.getElementById('text-watermark-modal');
+                modal.style.display = 'block';
+
+                document.getElementById('save-text-button').addEventListener('click', function() {
+                    const text = document.getElementById('text-watermark-input').value.trim();
+                    const font = document.getElementById('font-select').value;
+                    const fontSize = document.getElementById('font-size-input').value;
+                    if (text) {
+                        generateTextWatermark(text, font, fontSize);
+                        modal.style.display = 'none';
+                    } else {
+                        alert('请输入文字内容。');
+                    }
+                });
+
+                document.getElementById('cancel-text-button').addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+
+            function generateTextWatermark(text, fontFamily, fontSize) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.font = `${fontSize}px "${fontFamily}"`;
+                ctx.fillStyle = '#000';
+                const textWidth = ctx.measureText(text).width;
+                canvas.width = textWidth;
+                canvas.height = parseInt(fontSize) + 10;
+                ctx.font = `${fontSize}px "${fontFamily}"`;
+                ctx.fillStyle = '#000';
+                ctx.textBaseline = 'top';
+                ctx.fillText(text, 0, 0);
+
+                const dataUrl = canvas.toDataURL('image/png');
+                saveWatermark(dataUrl);
+                updateWatermarkList();
+            }
+
+            // 更新水印预览
+            function updateWatermarkPreview() {
+                const container = document.getElementById('watermark-preview-container');
+                container.innerHTML = '';
+
+                let watermarks = JSON.parse(localStorage.getItem('watermarks')) || [];
+
+                // 如果没有水印，使用默认的 signature.png
+                if (watermarks.length === 0) {
+                    const defaultWatermark = 'signature.png';
+                    const img = new Image();
+                    img.src = defaultWatermark;
+                    watermarkImages.push(img);
+                    watermarks.push(defaultWatermark);
+                }
+
+                watermarks.forEach((dataUrl, index) => {
+                    const img = document.createElement('img');
+                    img.src = dataUrl;
+                    img.className = 'watermark-preview';
+                    img.addEventListener('click', () => {
+                        selectWatermark(index);
+                    });
+                    if (canvasList[currentIndex] && canvasList[currentIndex].watermarkIndex === index) {
+                        img.classList.add('selected');
+                    }
+                    container.appendChild(img);
+                });
+            }
+
+            function selectWatermark(index) {
+                const params = canvasList[currentIndex];
+                const previousIndex = params.watermarkIndex;
+                params.watermarkIndex = index;
+                params.watermarkImage = new Image();
+                params.watermarkImage.src = watermarkImages[index].src;
+
+                updateCurrentPreview();
+
+                // 记录操作
+                recordAction({
+                    type: 'watermarkChange',
+                    index: currentIndex,
+                    previousParams: { watermarkIndex: previousIndex }
+                });
+
+                // 更新预览选中状态
+                updateWatermarkPreview();
+            }
+
+            // 更新滑块值显示和参数
+            function updateScale() {
+                const scaleValue = document.getElementById('scale-slider').value;
+                const params = canvasList[currentIndex];
+                const previousScale = params.scale;
+                params.scale = parseInt(scaleValue) / 100;
+                updateCurrentPreview();
+                recordAction({
+                    type: 'scaleChange',
+                    index: currentIndex,
+                    previousParams: { scale: previousScale }
+                });
+            }
+
+            function updateRotation() {
+                const rotationValue = document.getElementById('rotation-slider').value;
+                const params = canvasList[currentIndex];
+                const previousRotation = params.rotation;
+                params.rotation = parseInt(rotationValue);
+                updateCurrentPreview();
+                recordAction({
+                    type: 'rotationChange',
+                    index: currentIndex,
+                    previousParams: { rotation: previousRotation }
+                });
+            }
+
+            function updateOffsetX() {
+                const offsetXValue = document.getElementById('offset-x-slider').value;
+                const params = canvasList[currentIndex];
+                const previousOffsetX = params.offsetX;
+                params.offsetX = parseInt(offsetXValue);
+                updateCurrentPreview();
+                recordAction({
+                    type: 'offsetXChange',
+                    index: currentIndex,
+                    previousParams: { offsetX: previousOffsetX }
+                });
+            }
+
+            function updateOffsetY() {
+                const offsetYValue = document.getElementById('offset-y-slider').value;
+                const params = canvasList[currentIndex];
+                const previousOffsetY = params.offsetY;
+                params.offsetY = parseInt(offsetYValue);
+                updateCurrentPreview();
+                recordAction({
+                    type: 'offsetYChange',
+                    index: currentIndex,
+                    previousParams: { offsetY: previousOffsetY }
+                });
+            }
+
+            function updateOpacity() {
+                const opacityValue = document.getElementById('opacity-slider').value;
+                const params = canvasList[currentIndex];
+                const previousOpacity = params.opacity;
+                params.opacity = parseInt(opacityValue) / 100;
+                updateCurrentPreview();
+                recordAction({
+                    type: 'opacityChange',
+                    index: currentIndex,
+                    previousParams: { opacity: previousOpacity }
+                });
+            }
+
+            function updatePosition() {
+                const params = canvasList[currentIndex];
+                const previousPosition = params.position;
+                params.position = document.getElementById('position-select').value;
+                updateCurrentPreview();
+                recordAction({
+                    type: 'positionChange',
+                    index: currentIndex,
+                    previousParams: { position: previousPosition }
+                });
+            }
+
+            function setColorOption(colorHex) {
+                const params = canvasList[currentIndex];
+                const previousColor = params.colorHex;
+                params.colorHex = colorHex;
+
+                // 更新颜色选择器的值
+                document.getElementById('color-picker').value = colorHex;
+
+                // 更新按钮的激活状态
+                document.getElementById('color-black-button').classList.toggle('active', colorHex.toUpperCase() === '#000000');
+                document.getElementById('color-white-button').classList.toggle('active', colorHex.toUpperCase() === '#FFFFFF');
+
+                updateCurrentPreview();
+                recordAction({
+                    type: 'colorChange',
+                    index: currentIndex,
+                    previousParams: { colorHex: previousColor }
+                });
+            }
+
+            function recordAction(action) {
+                redoStack = []; // 清空redoStack
+                const lastAction = actionHistory[actionHistory.length - 1];
+                if (lastAction && lastAction.type === action.type && lastAction.index === action.index) {
+                    // 更新上一次操作的参数
+                    lastAction.newParams = { ...canvasList[action.index] };
+                } else {
+                    actionHistory.push({
+                        ...action,
+                        newParams: { ...canvasList[action.index] }
+                    });
+                }
+            }
+
+            function undo() {
+                if (actionHistory.length === 0) {
+                    alert('没有可以撤销的操作。');
+                    return;
+                }
+                const lastAction = actionHistory.pop();
+                redoStack.push(lastAction); // 将操作放入redoStack
+
+                if (lastAction.type === 'applyAll') {
+                    canvasList.forEach((params, index) => {
+                        Object.assign(params, lastAction.previousParamsList[index]);
+                        drawWatermark(params);
+                    });
+                } else {
+                    const params = canvasList[lastAction.index];
+                    Object.assign(params, lastAction.previousParams);
+                    drawWatermark(params);
+                }
+
+                updateControlsForCurrentIndex();
+            }
+
+            function redo() {
+                if (redoStack.length === 0) {
+                    alert('没有可以还原的操作。');
+                    return;
+                }
+                const action = redoStack.pop();
+                actionHistory.push(action); // 将操作重新放入actionHistory
+
+                if (action.type === 'applyAll') {
+                    canvasList.forEach((params) => {
+                        Object.assign(params, action.newParams);
+                        drawWatermark(params);
+                    });
+                } else {
+                    const params = canvasList[action.index];
+                    Object.assign(params, action.newParams);
+                    drawWatermark(params);
+                }
+
+                updateControlsForCurrentIndex();
+            }
+
+            function processImages() {
+                // 重置变量
+                imageFiles = Array.from(document.getElementById('image-input').files);
+
+                if (imageFiles.length === 0) {
+                    alert('请先选择要处理的图片。');
+                    return;
+                }
+
+                processedImages = [];
+                canvasList = [];
+                currentIndex = 0;
+                actionHistory = [];
+                redoStack = [];
+                document.querySelector('.swiper-wrapper').innerHTML = '';
+
+                // 销毁Swiper实例
+                if (swiper) {
+                    swiper.destroy(true, true);
+                }
+
+                document.getElementById('progress-bar').style.display = 'block';
+                document.getElementById('progress-bar-inner').style.width = '0%';
+
+                // 加载默认水印图片
+                let defaultWatermark;
+                if (watermarkImages.length > 0) {
+                    defaultWatermark = watermarkImages[0];
+                } else {
+                    defaultWatermark = new Image();
+                    defaultWatermark.src = 'signature.png';
+                }
+
+                // 开始处理图片
+                let loadedCount = 0;
+                imageFiles.forEach((imageFile, index) => {
+                    const img = new Image();
+                    img.src = URL.createObjectURL(imageFile);
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+
+                        // 设置画布尺寸
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+
+                        // 绘制原始图片
+                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        // 默认参数
+                        const defaultParams = {
+                            canvas: canvas,
+                            context: context,
+                            img: img,
+                            position: document.getElementById('position-select').value,
+                            scale: parseInt(document.getElementById('scale-slider').value) / 100,
+                            rotation: parseInt(document.getElementById('rotation-slider').value),
+                            offsetX: parseInt(document.getElementById('offset-x-slider').value),
+                            offsetY: parseInt(document.getElementById('offset-y-slider').value),
+                            opacity: parseInt(document.getElementById('opacity-slider').value) / 100,
+                            colorHex: document.getElementById('color-picker').value,
+                            shadowEnabled: document.getElementById('shadow-checkbox').checked,
+                            watermarkIndex: defaultWatermarkIndex,
+                            watermarkImage: watermarkImages[defaultWatermarkIndex] || defaultWatermark
+                        };
+
+                        // 自动匹配签名颜色
+                        autoSelectSignatureColor(context, img, defaultParams);
+
+                        canvasList.push(defaultParams);
+
+                        loadedCount++;
+                        // 更新进度条
+                        const progress = Math.round((loadedCount / imageFiles.length) * 100);
+                        document.getElementById('progress-bar-inner').style.width = progress + '%';
+
+                        if (loadedCount === imageFiles.length) {
+                            // 所有图片加载完成
+                            document.getElementById('progress-bar').style.display = 'none';
+                            document.getElementById('download-current-button').style.display = 'block';
+                            document.getElementById('download-all-button').style.display = 'block';
+
+                            initializeSwiper();
+                            showCurrentImage();
+                        }
+                    };
+                });
+            }
+
+            function autoSelectSignatureColor(context, img, params) {
+                // 计算签名尺寸
+                const shorterSide = Math.min(img.width, img.height);
+                const watermarkSize = shorterSide * params.scale;
+                const watermarkWidth = params.watermarkImage.width * params.scale;
+                const watermarkHeight = params.watermarkImage.height * params.scale;
+
+                // 计算签名位置
+                let positionX, positionY;
+                switch (params.position) {
+                    case 'bottom-center':
+                        positionX = (img.width - watermarkWidth) / 2 + params.offsetX;
+                        positionY = img.height - watermarkHeight + params.offsetY;
+                        break;
+                    case 'bottom-left':
+                        positionX = 10 + params.offsetX;
+                        positionY = img.height - watermarkHeight + params.offsetY;
+                        break;
+                    case 'bottom-right':
+                        positionX = img.width - watermarkWidth - 10 + params.offsetX;
+                        positionY = img.height - watermarkHeight + params.offsetY;
+                        break;
+                    case 'top-center':
+                        positionX = (img.width - watermarkWidth) / 2 + params.offsetX;
+                        positionY = 0 + params.offsetY;
+                        break;
+                    case 'top-left':
+                        positionX = 10 + params.offsetX;
+                        positionY = 0 + params.offsetY;
+                        break;
+                    case 'top-right':
+                        positionX = img.width - watermarkWidth - 10 + params.offsetX;
+                        positionY = 0 + params.offsetY;
+                        break;
+                }
+
+                // 获取签名区域的图像数据
+                const sampleWidth = Math.min(watermarkWidth, img.width - positionX);
+                const sampleHeight = Math.min(watermarkHeight, img.height - positionY);
+
+                // 防止取样区域超出图片范围
+                if (sampleWidth <= 0 || sampleHeight <= 0) {
+                    params.colorHex = '#000000'; // 默认黑色
+                    return;
+                }
+
+                const imageData = context.getImageData(positionX, positionY, sampleWidth, sampleHeight);
+                const data = imageData.data;
+                let totalBrightness = 0;
+                for (let i = 0; i < data.length; i += 4) {
+                    const brightness = (0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+                    totalBrightness += brightness;
+                }
+                const averageBrightness = totalBrightness / (data.length / 4);
+                if (averageBrightness > 128) {
+                    // 背景较亮，使用黑色签名
+                    params.colorHex = '#000000';
+                } else {
+                    // 背景较暗，使用白色签名
+                    params.colorHex = '#FFFFFF';
+                }
+            }
+
+            function drawWatermark(params) {
+                const {
+                    canvas,
+                    context,
+                    img,
+                    position,
+                    scale,
+                    rotation,
+                    offsetX,
+                    offsetY,
+                    opacity,
+                    colorHex,
+                    shadowEnabled,
+                    watermarkImage
+                } = params;
+
+                // 清除之前的内容
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                // 绘制原始图片
+                context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                // 计算水印尺寸（根据缩放比例）
+                const shorterSide = Math.min(canvas.width, canvas.height);
+                const watermarkSize = shorterSide * scale;
+
+                // 重新着色签名
+                const coloredSignature = recolorSignature(watermarkImage, colorHex);
+
+                // 缩放后的水印尺寸
+                const scaleFactor = (shorterSide / watermarkImage.width) * scale;
+                const watermarkWidth = watermarkImage.width * scaleFactor;
+                const watermarkHeight = watermarkImage.height * scaleFactor;
+
+                // 计算水印位置
+                let positionX, positionY;
+                switch (position) {
+                    case 'bottom-center':
+                        positionX = (canvas.width - watermarkWidth) / 2 + offsetX;
+                        positionY = canvas.height - watermarkHeight + offsetY;
+                        break;
+                    case 'bottom-left':
+                        positionX = 10 + offsetX;
+                        positionY = canvas.height - watermarkHeight + offsetY;
+                        break;
+                    case 'bottom-right':
+                        positionX = canvas.width - watermarkWidth - 10 + offsetX;
+                        positionY = canvas.height - watermarkHeight + offsetY;
+                        break;
+                    case 'top-center':
+                        positionX = (canvas.width - watermarkWidth) / 2 + offsetX;
+                        positionY = 0 + offsetY;
+                        break;
+                    case 'top-left':
+                        positionX = 10 + offsetX;
+                        positionY = 0 + offsetY;
+                        break;
+                    case 'top-right':
+                        positionX = canvas.width - watermarkWidth - 10 + offsetX;
+                        positionY = 0 + offsetY;
+                        break;
+                }
+
+                // 确保水印在照片内
+                positionX = Math.max(0, Math.min(positionX, canvas.width - watermarkWidth));
+                positionY = Math.max(0, Math.min(positionY, canvas.height - watermarkHeight));
+
+                context.save();
+                // 将原点移动到水印中心
+                context.translate(positionX + watermarkWidth / 2, positionY + watermarkHeight / 2);
+                context.rotate(rotation * Math.PI / 180);
+                context.globalAlpha = opacity;
+
+                // 添加阴影
+                if (shadowEnabled) {
+                    context.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    context.shadowBlur = 5;
+                    context.shadowOffsetX = 3;
+                    context.shadowOffsetY = 3;
+                }
+
+                // 绘制签名，位置调整为使其中心对齐
+                context.drawImage(coloredSignature, -watermarkWidth / 2, -watermarkHeight / 2, watermarkWidth, watermarkHeight);
+
+                context.restore();
+            }
+
+            function recolorSignature(watermarkImage, colorHex) {
+                const tempCanvas = document.createElement('canvas');
+                const tempContext = tempCanvas.getContext('2d');
+                tempCanvas.width = watermarkImage.width;
+                tempCanvas.height = watermarkImage.height;
+
+                // 填充所选颜色
+                tempContext.fillStyle = colorHex;
+                tempContext.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+                // 应用混合模式，将签名形状与颜色合并
+                tempContext.globalCompositeOperation = 'destination-in';
+                tempContext.drawImage(watermarkImage, 0, 0);
+
+                // 恢复混合模式
+                tempContext.globalCompositeOperation = 'source-over';
+
+                return tempCanvas;
+            }
+
+            function initializeSwiper() {
+                const swiperWrapper = document.querySelector('.swiper-wrapper');
+                swiperWrapper.innerHTML = '';
+
+                canvasList.forEach((item, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.appendChild(item.canvas);
+                    swiperWrapper.appendChild(slide);
+                });
+
+                swiper = new Swiper('.swiper-container', {
+                    loop: false,
+                    pagination: {
+                        el: '.swiper-pagination',
+                    },
+                    autoHeight: true, // 启用自动高度
+                    on: {
+                        slideChange: function () {
+                            currentIndex = swiper.activeIndex;
+                            updateControlsForCurrentIndex();
+                            drawWatermark(canvasList[currentIndex]);
+                        },
+                    },
+                });
+            }
+
+            function showCurrentImage() {
+                swiper.slideTo(currentIndex, 0);
+                updateControlsForCurrentIndex();
+                drawWatermark(canvasList[currentIndex]);
+            }
+
+            function updateControlsForCurrentIndex() {
+                const params = canvasList[currentIndex];
+
+                document.getElementById('position-select').value = params.position;
+                document.getElementById('scale-slider').value = params.scale * 100;
+                document.getElementById('scale-input').value = params.scale * 100;
+                document.getElementById('rotation-slider').value = params.rotation;
+                document.getElementById('rotation-input').value = params.rotation;
+                document.getElementById('offset-x-slider').value = params.offsetX;
+                document.getElementById('offset-x-input').value = params.offsetX;
+                document.getElementById('offset-y-slider').value = params.offsetY;
+                document.getElementById('offset-y-input').value = params.offsetY;
+                document.getElementById('opacity-slider').value = params.opacity * 100;
+                document.getElementById('opacity-input').value = params.opacity * 100;
+
+                // 更新颜色选择器和按钮状态
+                document.getElementById('color-picker').value = params.colorHex;
+                document.getElementById('color-black-button').classList.toggle('active', params.colorHex.toUpperCase() === '#000000');
+                document.getElementById('color-white-button').classList.toggle('active', params.colorHex.toUpperCase() === '#FFFFFF');
+
+                // 更新阴影复选框
+                document.getElementById('shadow-checkbox').checked = params.shadowEnabled;
+
+                // 更新水印预览选中状态
+                updateWatermarkPreview();
+            }
+
+            function updateCurrentPreview() {
+                const params = canvasList[currentIndex];
+                drawWatermark(params);
+            }
+
+            function applyPreviousSettings() {
+                if (currentIndex === 0) {
+                    alert('当前是第一张照片，没有上一张照片的设置可用。');
+                    return;
+                }
+                const previousParams = { ...canvasList[currentIndex - 1] };
+                const currentParams = canvasList[currentIndex];
+
+                // 记录当前参数用于撤销
+                const previousState = { ...currentParams };
+
+                // 复制参数（避免复制canvas, context等对象）
+                currentParams.position = previousParams.position;
+                currentParams.scale = previousParams.scale;
+                currentParams.rotation = previousParams.rotation;
+                currentParams.offsetX = previousParams.offsetX;
+                currentParams.offsetY = previousParams.offsetY;
+                currentParams.opacity = previousParams.opacity;
+                currentParams.colorHex = previousParams.colorHex;
+                currentParams.shadowEnabled = previousParams.shadowEnabled;
+                currentParams.watermarkIndex = previousParams.watermarkIndex;
+                currentParams.watermarkImage = previousParams.watermarkImage;
+
+                // 更新控件和预览
+                updateControlsForCurrentIndex();
+                drawWatermark(currentParams);
+
+                // 记录用户操作
+                actionHistory.push({
+                    type: 'applyPrevious',
+                    index: currentIndex,
+                    previousParams: previousState,
+                    newParams: { ...currentParams }
+                });
+            }
+
+            function applyToAll() {
+                const currentParams = canvasList[currentIndex];
+                const previousParamsList = canvasList.map(params => ({ ...params }));
+
+                document.getElementById('progress-bar').style.display = 'block';
+                document.getElementById('progress-bar-inner').style.width = '0%';
+
+                let processedCount = 0;
+                canvasList.forEach((params, index) => {
+                    if (index !== currentIndex) {
+                        Object.assign(params, {
+                            position: currentParams.position,
+                            scale: currentParams.scale,
+                            rotation: currentParams.rotation,
+                            offsetX: currentParams.offsetX,
+                            offsetY: currentParams.offsetY,
+                            opacity: currentParams.opacity,
+                            colorHex: currentParams.colorHex,
+                            shadowEnabled: currentParams.shadowEnabled,
+                            watermarkIndex: currentParams.watermarkIndex,
+                            watermarkImage: currentParams.watermarkImage
+                        });
+                        drawWatermark(params);
+                    }
+                    processedCount++;
+                    // 更新进度条
+                    const progress = Math.round((processedCount / canvasList.length) * 100);
+                    document.getElementById('progress-bar-inner').style.width = progress + '%';
+
+                    if (processedCount === canvasList.length) {
+                        document.getElementById('progress-bar').style.display = 'none';
+                    }
+                });
+
+                // 记录用户操作
+                actionHistory.push({
+                    type: 'applyAll',
+                    previousParamsList: previousParamsList,
+                    newParams: { ...currentParams }
+                });
+
+                redoStack = []; // 清空redoStack
+            }
+
+            function savePreset() {
+                let presetName = document.getElementById('preset-name-input').value.trim();
+                if (!presetName) {
+                    const now = new Date();
+                    presetName = `预设_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}${now.getSeconds().toString().padStart(2,'0')}`;
+                }
+                const params = canvasList[currentIndex];
+                const presetData = {
+                    position: params.position,
+                    scale: params.scale,
+                    rotation: params.rotation,
+                    offsetX: params.offsetX,
+                    offsetY: params.offsetY,
+                    opacity: params.opacity,
+                    colorHex: params.colorHex,
+                    shadowEnabled: params.shadowEnabled,
+                    watermarkIndex: params.watermarkIndex
+                };
+                localStorage.setItem('preset_' + presetName, JSON.stringify(presetData));
+                alert(`预设已保存为 "${presetName}"。`);
+                updatePresetList();
+            }
+
+            function updatePresetList() {
+                const presetSelect = document.getElementById('preset-select');
+                presetSelect.innerHTML = '<option value="">选择预设</option>';
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('preset_')) {
+                        const presetName = key.replace('preset_', '');
+                        const option = document.createElement('option');
+                        option.value = presetName;
+                        option.textContent = presetName;
+                        presetSelect.appendChild(option);
+                    }
+                }
+            }
+
+            function loadPreset() {
+                const presetName = document.getElementById('preset-select').value;
+                if (!presetName) {
+                    alert('请先选择预设。');
+                    return;
+                }
+                const presetData = JSON.parse(localStorage.getItem('preset_' + presetName));
+                applyPreset(presetData);
+            }
+
+            function deletePreset() {
+                const presetName = document.getElementById('preset-select').value;
+                if (!presetName) {
+                    alert('请先选择要删除的预设。');
+                    return;
+                }
+                if (confirm(`确定要删除预设 "${presetName}" 吗？`)) {
+                    localStorage.removeItem('preset_' + presetName);
+                    updatePresetList();
+                    alert('预设已删除。');
+                }
+            }
+
+            function applyPreset(presetData) {
+                const params = canvasList[currentIndex];
+                const previousParams = { ...params };
+
+                // 应用预设
+                params.position = presetData.position || params.position;
+                params.scale = presetData.scale || params.scale;
+                params.rotation = presetData.rotation || params.rotation;
+                params.offsetX = presetData.offsetX || params.offsetX;
+                params.offsetY = presetData.offsetY || params.offsetY;
+                params.opacity = presetData.opacity || params.opacity;
+                params.colorHex = presetData.colorHex || params.colorHex;
+                params.shadowEnabled = presetData.shadowEnabled !== undefined ? presetData.shadowEnabled : params.shadowEnabled;
+                params.watermarkIndex = presetData.watermarkIndex !== undefined ? presetData.watermarkIndex : params.watermarkIndex;
+                params.watermarkImage = watermarkImages[params.watermarkIndex];
+
+                // 更新控件和预览
+                updateControlsForCurrentIndex();
+                drawWatermark(params);
+
+                // 记录用户操作
+                actionHistory.push({
+                    type: 'applyPreset',
+                    index: currentIndex,
+                    previousParams: previousParams,
+                    newParams: { ...params }
+                });
+
+                redoStack = []; // 清空redoStack
+            }
+
+            function exportPreset() {
+                const presets = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('preset_')) {
+                        const presetName = key.replace('preset_', '');
+                        const presetData = JSON.parse(localStorage.getItem(key));
+                        presets[presetName] = presetData;
+                    }
+                }
+                const blob = new Blob([JSON.stringify(presets)], { type: 'application/json' });
+                const now = new Date();
+                const fileName = `预设_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}${now.getSeconds().toString().padStart(2,'0')}.json`;
+                saveAs(blob, fileName);
+            }
+
+            function importPreset(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const importedPresets = JSON.parse(e.target.result);
+                            for (const presetName in importedPresets) {
+                                localStorage.setItem('preset_' + presetName, JSON.stringify(importedPresets[presetName]));
+                            }
+                            updatePresetList();
+                            alert('预设已成功导入。');
+                        } catch (error) {
+                            alert('导入失败，请确保文件格式正确。');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            }
+
+            // 初始化时更新预设列表
+            updatePresetList();
+
+            function downloadCurrentImage() {
+                const params = canvasList[currentIndex];
+                drawWatermark(params);
+
+                params.canvas.toBlob((blob) => {
+                    if (!blob) {
+                        alert('生成图片失败，请重试。');
+                        return;
+                    }
+                    let originalName = imageFiles[currentIndex].name;
+                    let fileName = originalName.replace(/(\.\w+)$/, '_WaterMark$1');
+                    fileName = sanitizeFileName(fileName);
+                    let version = 1;
+
+                    // 模拟文件名冲突处理
+                    while (processedImages.includes(fileName)) {
+                        version++;
+                        fileName = originalName.replace(/(\.\w+)$/, `_WaterMark_v${version}$1`);
+                        fileName = sanitizeFileName(fileName);
+                    }
+
+                    processedImages.push(fileName);
+
+                    saveAs(blob, fileName);
+                }, 'image/jpeg', 0.95);
+            }
+
+            function downloadAllImages() {
+                if (canvasList.length === 0) {
+                    alert('没有可下载的图片。');
+                    return;
+                }
+
+                const zip = new JSZip();
+                const folderName = 'watermarked_images';
+                const imgFolder = zip.folder(folderName);
+
+                let processedCount = 0;
+                document.getElementById('progress-bar').style.display = 'block';
+                document.getElementById('progress-bar-inner').style.width = '0%';
+
+                let fileNameCounts = {};
+
+                canvasList.forEach((item, index) => {
+                    drawWatermark(item);
+                    item.canvas.toBlob((blob) => {
+                        if (!blob) {
+                            alert('生成图片失败，请重试。');
+                            return;
+                        }
+                        const imageFile = imageFiles[index];
+                        let originalName = imageFile.name;
+                        let fileName = originalName.replace(/(\.\w+)$/, '_WaterMark$1');
+                        fileName = sanitizeFileName(fileName);
+
+                        // 处理文件名冲突
+                        if (fileNameCounts[fileName]) {
+                            fileNameCounts[fileName]++;
+                            const version = fileNameCounts[fileName];
+                            fileName = originalName.replace(/(\.\w+)$/, `_WaterMark_v${version}$1`);
+                            fileName = sanitizeFileName(fileName);
+                        } else {
+                            fileNameCounts[fileName] = 1;
+                        }
+
+                        imgFolder.file(fileName, blob);
+                        processedCount++;
+
+                        // 更新进度条
+                        const progress = Math.round((processedCount / canvasList.length) * 100);
+                        document.getElementById('progress-bar-inner').style.width = progress + '%';
+
+                        if (processedCount === canvasList.length) {
+                            document.getElementById('progress-bar').style.display = 'none';
+                            zip.generateAsync({ type: 'blob' }).then((content) => {
+                                saveAs(content, folderName + '.zip');
+                            });
+                        }
+                    }, 'image/jpeg', 0.95);
+                });
+            }
+
+            function sanitizeFileName(fileName) {
+                return fileName.replace(/[\/\\:*?"<>|]/g, '_');
+            }
+        </script>
+    </body>
+    </html>
