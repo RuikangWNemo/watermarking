@@ -2,19 +2,22 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>批量添加水印工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>睿康的批量添加水印工具</title>
     <style>
         /* 全局样式 */
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f4f4;
+            background: linear-gradient(120deg, #f0f4f8, #cfe0f5);
+        }
+        #watermark-tool {
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
         }
         #watermark-tool {
             max-width: 100%;
             margin: 0 auto;
             background-color: #fff;
-            padding: 20px;
+            padding: 10px;
             box-sizing: border-box;
         }
         #watermark-tool h1 {
@@ -38,41 +41,42 @@
         /* 主内容区域 */
         #main-content {
             display: flex;
-            height: calc(100vh - 300px); /* 根据需要调整高度 */
+            flex-direction: row;
+            height: calc(100vh - 300px);
         }
         /* 控件区域样式 */
         #left-controls, #right-controls {
-            flex: 0 0 220px; /* 固定宽度 */
+            flex: 0 0 220px;
             overflow-y: auto;
-            padding: 10px;
+            padding: 5px;
             box-sizing: border-box;
         }
         /* 调整预览区域的宽度 */
         #preview-container {
-            flex: 1; /* 占据剩余空间 */
+            flex: 1;
             overflow: auto;
             display: flex;
             justify-content: center;
             align-items: center;
         }
         .control-group {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .control-group h3 {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
+            padding-bottom: 3px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .control-group h4 {
-            margin-top: 10px;
-            margin-bottom: 5px;
+            margin-top: 5px;
+            margin-bottom: 3px;
         }
         .control-group label {
             display: block;
-            margin: 10px 0 5px;
+            margin: 5px 0 2px;
             font-weight: bold;
         }
         .control-group input[type="range"],
@@ -80,13 +84,13 @@
         .control-group select,
         .control-group input[type="number"] {
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .slider-value {
             display: inline-block;
             width: 50px;
             text-align: right;
-            margin-left: 10px;
+            margin-left: 5px;
         }
         /* 调整输入框和单位符号的位置 */
         .input-group {
@@ -95,7 +99,7 @@
         }
         .input-group input[type="number"] {
             width: 50px;
-            padding: 5px;
+            padding: 3px;
             font-size: 14px;
             box-sizing: border-box;
         }
@@ -105,21 +109,21 @@
         /* 按钮样式 */
         .action-button {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background-color: #28a745;
             border: none;
             color: #fff;
             font-size: 16px;
             cursor: pointer;
-            margin: 10px 0;
+            margin: 5px 0;
             transition: background-color 0.3s;
         }
         .action-button:hover {
             background-color: #218838;
         }
         .small-button {
-            padding: 10px 15px;
-            margin: 5px 0;
+            padding: 8px 12px;
+            margin: 3px 0;
             font-size: 14px;
             width: 100%;
             box-sizing: border-box;
@@ -136,19 +140,51 @@
         /* 进度条样式 */
         #progress-bar {
             width: 100%;
-            background-color: #ccc;
-            margin: 10px 0;
-            height: 20px;
-            border-radius: 10px;
+            background-color: #e0e0e0;
+            margin: 5px 0;
+            height: 24px;
+            border-radius: 12px;
             overflow: hidden;
             display: none;
+            position: relative;
+            z-index: 1; /* 确保进度条在旋转圈下方 */
         }
+
         #progress-bar-inner {
             height: 100%;
             width: 0%;
             background-color: #28a745;
             transition: width 0.3s;
+            background: linear-gradient(90deg, #28a745, #218838);
+            animation: pulseProgress 1.5s infinite;
         }
+        @keyframes pulseProgress {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        #loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            border: 4px solid rgba(0, 123, 255, 0.2); /* 半透明边框 */
+            border-top: 4px solid #007bff; /* 亮色前景 */
+            border-radius: 50%;
+            transform-origin: center;
+            animation: spin 0.8s linear infinite;
+            transform: translate(-50%, -50%);
+            box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.5); /* 柔和阴影 */
+            z-index: 2; /* 使旋转圈显示在进度条之上 */
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
         /* Swiper 样式 */
         .swiper-container {
             width: 100%;
@@ -181,13 +217,13 @@
             display: flex;
             overflow-x: auto;
             border: 1px solid #ccc;
-            padding: 5px;
-            height: 60px;
+            padding: 3px;
+            height: 50px;
         }
         .watermark-preview {
-            width: 50px;
-            height: 50px;
-            margin-right: 5px;
+            width: 40px;
+            height: 40px;
+            margin-right: 3px;
             cursor: pointer;
             border: 1px solid #ccc;
             transition: border-color 0.3s;
@@ -202,13 +238,13 @@
         .collapsible {
             background-color: #f1f1f1;
             cursor: pointer;
-            padding: 5px;
+            padding: 3px;
             width: 100%;
             border: none;
             text-align: left;
             outline: none;
             font-size: 15px;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             transition: background-color 0.3s;
         }
         .collapsible:hover {
@@ -217,14 +253,16 @@
         .active {
             background-color: #ccc;
         }
+
+        /* 定义隐藏和显示时的样式 */
         .content {
-            padding: 0 5px;
-            display: none;
+            max-height: 0; /* 折叠时的高度 */
             overflow: hidden;
+            transition: max-height 0.5s ease-out; /* 平滑过渡时间 */
         }
+
         .content.show {
-            display: block;
-            animation: fadeIn 0.5s;
+            max-height: 1000px; /* 一个足够大的值，确保能展示完整内容 */
         }
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -232,52 +270,54 @@
         }
         /* 水印库列表样式 */
         #watermark-list {
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .watermark-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            cursor: move;
-            transition: background-color 0.3s;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 5px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .watermark-item:hover {
-            background-color: #f9f9f9;
+            background: #e6e6e6;
+            transform: translateY(-4px);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
         }
         .watermark-thumbnail {
-            width: 50px;
-            height: 50px;
-            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+            margin-right: 5px;
             border: 1px solid #ccc;
         }
         .watermark-item button {
-            margin-right: 5px;
-            padding: 5px 10px;
+            margin-right: 3px;
+            padding: 5px 8px;
             font-size: 12px;
         }
         /* 绘制水印画布样式 */
         #drawing-canvas {
             border: 1px solid #ccc;
             background-color: #fff;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         /* 文字水印输入框样式 */
         #text-watermark-input {
             width: 100%;
-            padding: 5px;
+            padding: 3px;
             font-size: 16px;
             box-sizing: border-box;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         /* 水印库管理按钮组样式 */
         .button-group {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .button-group .small-button {
             flex: 1;
-            margin-right: 5px;
+            margin-right: 3px;
         }
         .button-group .small-button:last-child {
             margin-right: 0;
@@ -287,39 +327,237 @@
         #preset-import-input {
             display: none;
         }
-    </style>
-    <!-- 引入 Swiper 的 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
-    <!-- 引入 SortableJS 的 CSS -->
-    <style>
-        .sortable-ghost {
-            opacity: 0.4;
+        /* 模态窗口样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
         }
-    </style>
-</head>
-
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Open PDF Manual</title>
-</head>
-<body>
-    <!-- 打开说明书按钮 -->
-    <button onclick="openPDF()">打开说明书 </button>
-
-    <script>
-        function openPDF() {
-            // 这里填写说明书的相对路径
-            const pdfPath = "manual.pdf"; // 或者 "../folder/manual.pdf"
-            window.open(pdfPath, "_blank");
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
         }
-    </script>
-</body>
-</html>
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modal:hover,
+        .close-modal:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
+        /* 帮助按钮样式 */
+        #help-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+            animation: pulse 2s infinite; /* 添加脉冲效果 */
+        }
+
+        /* 帮助按钮悬停效果 */
+        #help-button:hover {
+            background-color: #0056b3; /* 改变悬停时的背景颜色 */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* 加深阴影效果 */
+            transform: scale(1.2); /* 稍微放大按钮 */
+        }
+
+        /* 快捷键提示固定在左侧的样式 */
+        #shortcut-tips {
+            position: fixed; /* 固定定位 */
+            top: 3%; /* 垂直居中 */
+            left: 0; /* 靠左 */
+            transform: translate(-100%, -50%); /* 初始隐藏在左侧 */
+            background-color: rgba(0, 123, 255, 0.7); /* 半透明背景 */
+            color: #fff;
+            padding: 10px;
+            border-radius: 0 5px 5px 0;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0; /* 初始隐藏 */
+            transition: opacity 0.5s, transform 0.5s;
+            cursor: pointer; /* 鼠标悬停时显示为手型 */
+            z-index: 1000; /* 确保在其他元素之上 */
+            width: auto; /* 自动调整宽度 */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+            animation: pulse 2s infinite; /* 添加脉冲效果 */
+        }
+
+        /* 显示快捷键提示时的样式 */
+        #shortcut-tips.show-shortcut-tips {
+            opacity: 1;
+            transform: translate(0, -50%); /* 完全显示 */
+        }
+
+        /* 悬停时显示快捷键提示 */
+        #shortcut-tips:hover,
+        #shortcut-tips.show-shortcut-tips:hover {
+            opacity: 1;
+            transform: translate(0, -50%);
+            background-color: #0056b3; /* 改变悬停时的背景颜色 */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* 加深阴影效果 */
+        }
+
+        #shortcut-tips {
+            background-color: rgb(0, 123, 255); 
+        }
+
+        /* 帮助按钮样式保持不变或根据需要调整 */
+        #help-button {
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            /* 保持脉冲效果 */
+            animation: pulseShortcut 2s infinite;
+        }
+
+        /* 快捷键提示的脉冲动画 */
+        @keyframes pulseShortcut {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        /* 快捷键提示显示时的动画 */
+        #shortcut-tips.show-shortcut-tips {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-100%, -50%); }
+            to { opacity: 1; transform: translate(0, -50%); }
+        }
+
+
+        .pulse-effect {
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0);
+                animation: shadowGlow 1.8s infinite alternate; /* 无限循环效果 */
+            }
+
+            @keyframes shadowGlow {
+                0% {
+                    box-shadow: 0 0 8px rgba(133, 133, 133, 0.4);
+                }
+                100% {
+                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+                }
+            }
+
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            #main-content {
+                flex-direction: column;
+            }
+            #left-controls, #right-controls {
+                flex: 0 0 auto;
+                width: 100%;
+            }
+            #left-controls, #right-controls {
+                order: 1;
+            }
+            #preview-container {
+                order: 0;
+                margin-bottom: 10px;
+            }
+            .control-group h3, .control-group label {
+                font-size: 14px;
+            }
+            .action-button, .small-button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+    }
+
+        </style>
+        <!-- 引入 Swiper 的 CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+        <!-- 引入 SortableJS 的 CSS -->
+        <style>
+            .sortable-ghost {
+                opacity: 0.4;
+            }
+        </style>
+</head>
+<!-- 引入 Fabric.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
 <body>
+    <!-- 帮助按钮及快捷键提示容器 -->
+    <div id="help-container">
+        <!-- 快捷键提示容器 -->
+        <div id="shortcut-tips" class="shortcut-tips">
+            <span id="tip-text">快捷键提示</span>
+        </div>
+<!-- 帮助按钮 -->
+<button id="help-button" class="help-button">
+    <!-- 使用 SVG 替换图标 -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="currentColor"/>
+        <text x="50%" y="55%" text-anchor="middle" font-size="12" fill="white" font-family="Arial" dy=".3em">?</text>
+    </svg>
+</button>
+
+
+<!-- 帮助模态窗口 -->
+<div id="help-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>使用说明</h2>
+        <p>欢迎使用批量添加水印工具！以下是使用指南：</p>
+        <ol>
+            <li>点击“选择图片”按钮，上传您要添加水印的图片。</li>
+            <li>在左侧调整水印的参数，包括位置、缩放比例、旋转角度、偏移和透明度。</li>
+            <li>在右侧可以选择水印、调整颜色、保存和加载预设。</li>
+            <li>您可以直接在图片上拖动水印，调整其位置、大小和旋转角度。</li>
+            <li>完成设置后，可以下载当前照片或所有照片。</li>
+        </ol>
+        <p>如果您有任何疑问，请参阅使用手册。</p>
+        <button id="view-manual-button" class="action-button">查看使用手册</button>
+    </div>
+</div>
     <div id="watermark-tool">
-        <h1>批量添加水印工具</h1>
+        <h1>睿康的批量添加水印工具</h1>
         <!-- 隐藏的文件选择控件 -->
         <input type="file" id="image-input" accept="image/*" multiple style="display:none;">
         <!-- 自定义文件选择按钮 -->
@@ -336,28 +574,41 @@
                     <button id="text-watermark-button" class="small-button">文字水印</button>
                 </div>
                 <!-- 绘制水印的弹窗 -->
-                <div id="draw-watermark-modal" style="display:none;">
-                    <canvas id="drawing-canvas" width="300" height="150"></canvas>
-                    <button id="save-drawing-button" class="small-button">保存绘制水印</button>
-                    <button id="cancel-drawing-button" class="small-button">取消</button>
+                <div id="draw-watermark-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal">&times;</span>
+                        <canvas id="drawing-canvas" width="300" height="150"></canvas>
+                        <button id="save-drawing-button" class="small-button">保存绘制水印</button>
+                        <button id="cancel-drawing-button" class="small-button">取消</button>
+                    </div>
                 </div>
                 <!-- 文字水印的弹窗 -->
-                <div id="text-watermark-modal" style="display:none;">
-                    <label for="text-watermark-input">输入文字：</label>
-                    <input type="text" id="text-watermark-input" placeholder="请输入水印文字">
-                    <label for="font-select">选择字体：</label>
-                    <select id="font-select">
-                        <option value="Amsterdam Four">Amsterdam Four</option>
-                        <option value="Stephen Type">Stephen Type</option>
-                        <!-- 添加其他字体选项 -->
-                    </select>
-                    <label for="font-size-input">字体大小：</label>
-                    <input type="number" id="font-size-input" value="48" min="10" max="200">
-                    <button id="save-text-button" class="small-button">保存文字水印</button>
-                    <button id="cancel-text-button" class="small-button">取消</button>
+                <div id="text-watermark-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal">&times;</span>
+                        <label for="text-watermark-input">输入文字：</label>
+                        <input type="text" id="text-watermark-input" placeholder="请输入水印文字">
+                        <label for="font-select">选择字体：</label>
+                        <select id="font-select">
+                            <option value="Arial">Arial</option>
+                            <option value="Handlee">Handlee</option>
+                            <!-- 添加其他字体选项 -->
+                        </select>
+                        <label for="font-size-input">字体大小：</label>
+                        <input type="number" id="font-size-input" value="48" min="10" max="200">
+                        <button id="save-text-button" class="small-button">保存文字水印</button>
+                        <button id="cancel-text-button" class="small-button">取消</button>
+                    </div>
                 </div>
                 <div id="watermark-list">
-                    <!-- 动态生成水印列表，支持拖拽排序 -->
+                    <div class="watermark-item">
+                        <span class="watermark-tag">文字水印</span>
+                        <img src="watermark.png" class="watermark-thumbnail" alt="Watermark">
+                        <div class="watermark-actions">
+                            <button class="action-button">删除</button>
+                            <button class="action-button">下载</button>
+                        </div>
+                    </div>
                 </div>
                 <!-- 隐藏的文件选择控件（用于上传水印） -->
                 <input type="file" id="watermark-upload-input" accept="image/*">
@@ -367,6 +618,7 @@
         <!-- 进度条 -->
         <div id="progress-bar">
             <div id="progress-bar-inner"></div>
+            <div id="loading-spinner"></div>
         </div>
         <!-- 主内容区域 -->
         <div id="main-content">
@@ -389,7 +641,7 @@
                         <input type="number" id="scale-input" value="20" min="10" max="100">
                         <span>%</span>
                     </div>
-                    <input type="range" id="scale-slider" min="10" max="100" value="20">
+                    <input type="range" id="scale-slider" min="10" max="100" value="50">
                     <label for="rotation-slider">旋转角度：</label>
                     <div class="input-group">
                         <input type="number" id="rotation-input" value="0" min="-180" max="180">
@@ -398,16 +650,16 @@
                     <input type="range" id="rotation-slider" min="-180" max="180" value="0">
                     <label for="offset-x-slider">水平偏移：</label>
                     <div class="input-group">
-                        <input type="number" id="offset-x-input" value="0" min="-1000" max="1000">
+                        <input type="number" id="offset-x-input" value="0" min="-2000" max="2000">
                         <span>px</span>
                     </div>
-                    <input type="range" id="offset-x-slider" min="-1000" max="1000" value="0">
+                    <input type="range" id="offset-x-slider" min="-2000" max="2000" value="0">
                     <label for="offset-y-slider">垂直偏移：</label>
                     <div class="input-group">
-                        <input type="number" id="offset-y-input" value="0" min="-1000" max="1000">
+                        <input type="number" id="offset-y-input" value="0" min="-2000" max="2000">
                         <span>px</span>
                     </div>
-                    <input type="range" id="offset-y-slider" min="-1000" max="1000" value="0">
+                    <input type="range" id="offset-y-slider" min="-2000" max="2000" value="0">
                     <label for="opacity-slider">透明度：</label>
                     <div class="input-group">
                         <input type="number" id="opacity-input" value="100" min="0" max="100">
@@ -489,19 +741,11 @@
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
         <!-- 引入 Signature Pad 的 JS -->
         <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+        <!-- 引入 Hammer.js -->
+        <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 
         <!-- 引入字体 -->
         <link href="https://fonts.googleapis.com/css2?family=Handlee&display=swap" rel="stylesheet">
-        <style>
-            @font-face {
-                font-family: 'Amsterdam Four';
-                src: url('fonts/AmsterdamFour.ttf') format('truetype');
-            }
-            @font-face {
-                font-family: 'Stephen Type';
-                src: url('fonts/StephenType.ttf') format('truetype');
-            }
-        </style>
 
         <script>
             // 全局变量
@@ -571,8 +815,8 @@
             });
             document.getElementById('offset-x-input').addEventListener('input', function() {
                 let value = parseInt(this.value);
-                if (value < -1000) value = -1000;
-                if (value > 1000) value = 1000;
+                if (value < -2000) value = -2000;
+                if (value > 2000) value = 2000;
                 this.value = value;
                 document.getElementById('offset-x-slider').value = value;
                 updateOffsetX();
@@ -585,8 +829,8 @@
             });
             document.getElementById('offset-y-input').addEventListener('input', function() {
                 let value = parseInt(this.value);
-                if (value < -1000) value = -1000;
-                if (value > 1000) value = 1000;
+                if (value < -2000) value = -2000;
+                if (value > 2000) value = 2000;
                 this.value = value;
                 document.getElementById('offset-y-slider').value = value;
                 updateOffsetY();
@@ -639,48 +883,414 @@
             });
             document.getElementById('preset-import-input').addEventListener('change', importPreset);
 
-            // 键盘事件监听器
-            document.addEventListener('keydown', function(event) {
-                if (event.target.tagName.toLowerCase() === 'input') {
-                    // 如果焦点在输入框中，忽略键盘事件
-                    return;
+            // 定义帮助模态窗口状态
+            let isHelpModalOpen = false;
+
+            // 切换帮助模态窗口并同步快捷键提示显示状态
+            function toggleHelpModal() {
+                const helpModal = document.getElementById('help-modal');
+                isHelpModalOpen = !isHelpModalOpen;
+                helpModal.style.display = isHelpModalOpen ? 'block' : 'none';
+
+                // 根据帮助模态窗口的状态隐藏或显示快捷键提示
+                const shortcutTips = document.getElementById('shortcut-tips');
+                if (isHelpModalOpen) {
+                    shortcutTips.classList.remove('show-shortcut-tips');
+                } else {
+                    shortcutTips.classList.add('show-shortcut-tips');
                 }
-                if (event.key === 'ArrowLeft') {
-                    // 向左切换照片
-                    if (currentIndex > 0) {
-                        swiper.slidePrev();
-                    }
-                } else if (event.key === 'ArrowRight') {
-                    // 向右切换照片
-                    if (currentIndex < canvasList.length - 1) {
-                        swiper.slideNext();
-                    }
-                } else if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
-                    if (event.shiftKey) {
-                        // 还原
-                        redo();
-                    } else {
-                        // 撤销
-                        undo();
-                    }
+            }
+
+            // 帮助按钮事件
+            document.getElementById('help-button').addEventListener('click', toggleHelpModal);
+
+            // 关闭模态窗口事件
+            document.querySelectorAll('.close-modal').forEach(function(elem) {
+                elem.addEventListener('click', function() {
+                    isHelpModalOpen = false;
+                    this.parentElement.parentElement.style.display = 'none';
+                    document.getElementById('shortcut-tips').classList.add('show-shortcut-tips');
+                });
+            });
+
+            // 点击模态窗口外部关闭
+            window.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal')) {
+                    isHelpModalOpen = false;
+                    event.target.style.display = 'none';
+                    document.getElementById('shortcut-tips').classList.add('show-shortcut-tips');
                 }
             });
 
-            // 折叠水印库管理
-            const coll = document.getElementsByClassName('collapsible');
-            for (let i = 0; i < coll.length; i++) {
-                coll[i].addEventListener('click', function() {
-                    this.classList.toggle('active');
-                    const content = this.nextElementSibling;
-                    if (content.style.display === 'block' || content.classList.contains('show')) {
-                        content.style.display = 'none';
-                        content.classList.remove('show');
-                    } else {
-                        content.style.display = 'block';
-                        content.classList.add('show');
+            // 初始化时显示快捷键提示
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('shortcut-tips').classList.add('show-shortcut-tips');
+            });
+
+            // 查看使用手册
+            document.getElementById('view-manual-button').addEventListener('click', function() {
+                window.open('manual.pdf', '_blank');
+            });
+
+            // 定义提示数组
+            const tips = [
+            "按 H 键打开帮助页面",
+            "使用 ← 和 → 键切换图片",
+            "按 W、A、S、D 键移动水印",
+            "按 Shift + W、A、S、D 键微调水印位置",
+            "按 + 或 - 键调整水印透明度",
+            "按 Shift + '+'' 或 '-' 键微调水印透明度",
+            "按 [ 或 ] 键缩放水印",
+            "按 Shift + [ 或 ] 键微调水印缩放",
+            "按 , 或 . 键旋转水印",
+            "按 Shift + , 或 . 键微调水印旋转",
+            "按 B/W 键切换水印为黑色/白色",
+            "按 Ctrl + S 保存当前图片",
+            "按 Ctrl + Shift + S 保存所有图片",
+            "按 Ctrl + U 上传图片",
+            "按 Alt + U 上传水印",
+            "按 Shift + P 应用当前设置到所有图片",
+            "按 Ctrl + Shift + P 保存当前预设",
+            "按 Ctrl + I 导入预设",
+            "按 Ctrl + L 加载预设",
+            "按 Ctrl + E 导出预设",
+            ];
+
+            // 获取提示元素
+            const tipText = document.getElementById('tip-text');
+            let currentTipIndex = 0;
+
+            // 每隔 3 秒切换提示内容
+            setInterval(() => {
+                // 更新提示文本
+                tipText.textContent = tips[currentTipIndex];
+                currentTipIndex = (currentTipIndex + 1) % tips.length; // 循环索引
+
+                // 添加淡入淡出效果
+                tipText.classList.remove('show-shortcut-tips');
+                setTimeout(() => tipText.classList.add('show-shortcut-tips'), 100); // 延时显示新提示
+            }, 3000);
+
+            // 保证快捷键提示在初始加载时显示
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('shortcut-tips').classList.add('show-shortcut-tips');
+            });
+            
+            function moveWatermark(deltaX, deltaY) {
+                const params = canvasList[currentIndex];
+                const previousOffsetX = params.offsetX;
+                const previousOffsetY = params.offsetY;
+                params.offsetX += deltaX;
+                params.offsetY += deltaY;
+                // 更新控件
+                document.getElementById('offset-x-slider').value = params.offsetX;
+                document.getElementById('offset-x-input').value = params.offsetX;
+                document.getElementById('offset-y-slider').value = params.offsetY;
+                document.getElementById('offset-y-input').value = params.offsetY;
+                updateCurrentPreview();
+                recordAction({
+                    type: 'offsetChange',
+                    index: currentIndex,
+                    previousParams: {
+                        offsetX: previousOffsetX,
+                        offsetY: previousOffsetY
                     }
                 });
             }
+            function scaleWatermark(deltaPercent) {
+                const params = canvasList[currentIndex];
+                const previousScale = params.scale;
+                let newScalePercent = params.scale * 100 + deltaPercent;
+                if (newScalePercent < 10) newScalePercent = 10;
+                if (newScalePercent > 100) newScalePercent = 100;
+                params.scale = newScalePercent / 100;
+                // 更新控件
+                document.getElementById('scale-slider').value = newScalePercent;
+                document.getElementById('scale-input').value = newScalePercent;
+                updateCurrentPreview();
+                recordAction({
+                    type: 'scaleChange',
+                    index: currentIndex,
+                    previousParams: {
+                        scale: previousScale
+                    }
+                });
+            }
+
+            function rotateWatermark(deltaDegrees) {
+                const params = canvasList[currentIndex];
+                const previousRotation = params.rotation;
+                params.rotation += deltaDegrees;
+                if (params.rotation < -180) params.rotation += 360;
+                if (params.rotation > 180) params.rotation -= 360;
+                // 更新控件
+                document.getElementById('rotation-slider').value = params.rotation;
+                document.getElementById('rotation-input').value = params.rotation;
+                updateCurrentPreview();
+                recordAction({
+                    type: 'rotationChange',
+                    index: currentIndex,
+                    previousParams: {
+                        rotation: previousRotation
+                    }
+                });
+            }
+
+            function adjustOpacity(deltaPercent) {
+                const params = canvasList[currentIndex];
+                const previousOpacity = params.opacity;
+                let newOpacityPercent = params.opacity * 100 + deltaPercent;
+                if (newOpacityPercent < 0) newOpacityPercent = 0;
+                if (newOpacityPercent > 100) newOpacityPercent = 100;
+                params.opacity = newOpacityPercent / 100;
+                // 更新控件
+                document.getElementById('opacity-slider').value = newOpacityPercent;
+                document.getElementById('opacity-input').value = newOpacityPercent;
+                updateCurrentPreview();
+                recordAction({
+                    type: 'opacityChange',
+                    index: currentIndex,
+                    previousParams: {
+                        opacity: previousOpacity
+                    }
+                });
+            }
+
+            // 键盘事件监听器
+            document.addEventListener('keydown', function(event) {
+                // 忽略输入框和文本区域中的键盘事件
+                if (event.target.tagName.toLowerCase() === 'input' || 
+                    event.target.tagName.toLowerCase() === 'textarea') {
+                    return;
+                }
+
+                const key = event.key.toLowerCase(); // 统一使用小写字符
+                const isShift = event.shiftKey;
+                const isCtrl = event.ctrlKey || event.metaKey;
+                const isAlt = event.altKey;
+
+                // 设置不同操作的变量
+                const moveAmount = isShift ? 1 : 10;
+                const scaleAmount = isShift ? 1 : 5;
+                const rotateAmount = isShift ? 1 : 5;
+                const opacityAmount = isShift ? 1 : 5;
+                    
+                // 根据键盘输入执行不同功能
+                switch (key) {
+                    // Ctrl + W：切换为白色水印
+                    case 'w':
+                        if (isCtrl && !isShift && !isAlt) {
+                            event.preventDefault();
+                            setColorOption('#FFFFFF');
+                        } else if (!isCtrl && !isAlt) { // 上移
+                            event.preventDefault();
+                            moveWatermark(0, -moveAmount);
+                        }
+                        break;
+
+                    // Ctrl + B：切换为黑色水印
+                    case 'b':
+                        if (isCtrl && !isShift && !isAlt) {
+                            event.preventDefault();
+                            setColorOption('#000000');
+                        }
+                        break;
+
+                    // 其他移动和操作快捷键
+                    case 'a': // 左移
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            moveWatermark(-moveAmount, 0);
+                        }
+                        break;
+                    case 's': // 下移
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            moveWatermark(0, moveAmount);
+                        }
+                        break;
+                    case 'd': // 右移
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            moveWatermark(moveAmount, 0);
+                        }
+                        break;
+
+                    // 水印缩放
+                    case '[': // 缩小
+                    case '{': 
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            scaleWatermark(-scaleAmount);
+                        }
+                        break;
+                    case ']': // 放大
+                    case '}':
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            scaleWatermark(scaleAmount);
+                        }
+                        break;
+
+                    // 水印旋转
+                    case ',': // 逆时针旋转
+                    case '<':
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            rotateWatermark(-rotateAmount);
+                        }
+                        break;
+                    case '.': // 顺时针旋转
+                    case '>':
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            rotateWatermark(rotateAmount);
+                        }
+                        break;
+
+                    // 透明度调整
+                    case '=': // 增加透明度
+                    case '+':
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            adjustOpacity(opacityAmount);
+                        }
+                        break;
+                    case '-': // 减少透明度
+                    case '_':
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            adjustOpacity(-opacityAmount);
+                        }
+                        break;
+
+                    // 图片切换
+                    case 'arrowleft': // 上一张图片
+                        event.preventDefault();
+                        if (currentIndex > 0) {
+                            swiper.slidePrev();
+                        }
+                        break;
+                    case 'arrowright': // 下一张图片
+                        event.preventDefault();
+                        if (currentIndex < canvasList.length - 1) {
+                            swiper.slideNext();
+                        }
+                        break;
+
+                    // 应用设置到所有图片
+                    case 'p':
+                        if (isShift && !isCtrl && !isAlt) {
+                            event.preventDefault();
+                            applyToAll();
+                        }
+                        break;
+
+                    // 打开帮助
+                    case 'h':
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            toggleHelpModal();
+                        }
+                        break;
+
+                    // 保存图片
+                    case 's':
+                        if (isCtrl && !isAlt) {
+                            event.preventDefault();
+                            if (isShift) {
+                                downloadAllImages();
+                            } else {
+                                downloadCurrentImage();
+                            }
+                        }
+                        break;
+
+                    // 上传图片或水印
+                    case 'u':
+                        if (isCtrl && !isAlt) {
+                            event.preventDefault();
+                            document.getElementById('image-input').click();
+                        } else if (isAlt && !isCtrl) {
+                            event.preventDefault();
+                            document.getElementById('watermark-upload-input').click();
+                        }
+                        break;
+
+                    // 预设管理快捷键
+                    case 'p':
+                        if (isCtrl && isShift && !isAlt) {
+                            event.preventDefault();
+                            savePreset();
+                        }
+                        break;
+                    case 'i':
+                        if (isCtrl && isShift && !isAlt) {
+                            event.preventDefault();
+                            document.getElementById('preset-import-input').click();
+                        }
+                        break;
+                    case 'l':
+                        if (isCtrl && !isShift && !isAlt) {
+                            event.preventDefault();
+                            loadPreset();
+                        }
+                        break;
+                    case 'e':
+                        if (isCtrl && !isShift && !isAlt) {
+                            event.preventDefault();
+                            exportPreset();
+                        }
+                        break;
+
+                    // 切换水印
+                    case '0': // 切换到第10个水印
+                        if (!isCtrl && !isAlt) {
+                            event.preventDefault();
+                            selectWatermark(9);
+                        }
+                        break;
+                    default:
+                        // 数字键选择水印
+                        if (!isCtrl && !isAlt && /^[1-9]$/.test(key)) {
+                            event.preventDefault();
+                            selectWatermark(parseInt(key) - 1);
+                        }
+                        break;
+
+                    // 撤销/重做
+                    case 'z':
+                        if (isCtrl) {
+                            event.preventDefault();
+                            if (isShift) {
+                                redo();
+                            } else {
+                                undo();
+                            }
+                        }
+                        break;
+                }
+            });
+           
+            // 折叠水印库管理
+            const coll = document.getElementsByClassName('collapsible');
+        // 绑定事件监听器到每个可折叠元素
+        for (let i = 0; i < coll.length; i++) {
+            coll[i].addEventListener('click', function (event) {
+                if (event.target === this) {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    
+                    if (content.classList.contains('show')) {
+                        content.classList.remove('show');
+                        content.style.maxHeight = null; // 关闭时重置
+                    } else {
+                        content.classList.add('show');
+                        content.style.maxHeight = content.scrollHeight + "px"; // 打开时平滑调整高度
+                    }
+                }
+            });
+        }
 
             // 初始化 SortableJS
             const watermarkListDiv = document.getElementById('watermark-list');
@@ -733,11 +1343,11 @@
                 // 假设背景为纯白色，设置透明度为0
                 for (let i = 0; i < data.length; i += 4) {
                     if (data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240) {
-                        data[i + 3] = 0;
+                        data[i + 3] = 0;  // 设置透明度为 0
                     }
                 }
                 ctx.putImageData(imageData, 0, 0);
-                return canvas.toDataURL('image/png');
+                return canvas.toDataURL('image/png');  // 返回处理后的图像数据 URL
             }
 
             function saveWatermark(dataUrl) {
@@ -751,6 +1361,34 @@
                 watermarkListDiv.innerHTML = '';
 
                 let watermarks = JSON.parse(localStorage.getItem('watermarks')) || [];
+                const uploadButton = document.getElementById('upload-watermark-button');
+                const drawButton = document.getElementById('draw-watermark-button');
+                const textButton = document.getElementById('text-watermark-button');
+
+                // 检查签名库是否只有默认的 `signature.png`
+                let isDefaultWatermarkOnly = watermarks.length === 0;
+
+                // 如果没有自定义水印，使用默认的 `signature.png`
+                if (isDefaultWatermarkOnly) {
+                    const defaultWatermark = 'signature.png';
+                    const img = new Image();
+                    img.src = defaultWatermark;
+                    watermarkImages.push(img);
+                    watermarks.push(defaultWatermark);
+                }
+
+                // 根据签名库状态设置按钮的脉冲效果
+                if (isDefaultWatermarkOnly) {
+                    // 当只有默认水印时，分别为三个按钮添加脉冲效果
+                    uploadButton.classList.add('pulse-effect');
+                    drawButton.classList.add('pulse-effect');
+                    textButton.classList.add('pulse-effect');
+                } else {
+                    // 如果有自定义水印，移除脉冲效果
+                    uploadButton.classList.remove('pulse-effect');
+                    drawButton.classList.remove('pulse-effect');
+                    textButton.classList.remove('pulse-effect');
+                }
 
                 // 加载水印图片数组
                 watermarkImages = watermarks.map(dataUrl => {
@@ -759,27 +1397,17 @@
                     return img;
                 });
 
-                // 如果没有水印，使用默认的 signature.png
-                if (watermarks.length === 0) {
-                    const defaultWatermark = 'signature.png';
-                    const img = new Image();
-                    img.src = defaultWatermark;
-                    watermarkImages.push(img);
-                    watermarks.push(defaultWatermark);
-                }
-
                 // 生成水印列表
                 watermarks.forEach((dataUrl, index) => {
                     const watermarkDiv = document.createElement('div');
                     watermarkDiv.className = 'watermark-item';
-                    watermarkDiv.setAttribute('data-id', index); // 为拖拽排序提供索引
+                    watermarkDiv.setAttribute('data-id', index);
 
                     const img = document.createElement('img');
                     img.src = dataUrl;
                     img.className = 'watermark-thumbnail';
                     watermarkDiv.appendChild(img);
 
-                    // 删除按钮
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = '删除';
                     deleteButton.addEventListener('click', () => {
@@ -787,7 +1415,6 @@
                     });
                     watermarkDiv.appendChild(deleteButton);
 
-                    // 下载按钮
                     const downloadButton = document.createElement('button');
                     downloadButton.textContent = '下载';
                     downloadButton.addEventListener('click', () => {
@@ -926,20 +1553,36 @@
             function selectWatermark(index) {
                 const params = canvasList[currentIndex];
                 const previousIndex = params.watermarkIndex;
+                
+                // 更新水印索引
                 params.watermarkIndex = index;
+
+                // 创建新的水印图像对象
                 params.watermarkImage = new Image();
+                
+                // 设置跨域属性
+                params.watermarkImage.crossOrigin = "anonymous";  // 解决跨域问题
+
+                // 设置水印图片的源
                 params.watermarkImage.src = watermarkImages[index].src;
 
-                updateCurrentPreview();
+                // 确保图像加载完成后更新 Canvas
+                params.watermarkImage.onload = function() {
+                    // 图像加载完成后执行操作，比如更新当前预览
+                    updateCurrentPreview();
+                };
 
-                // 记录操作
-                recordAction({
-                    type: 'watermarkChange',
-                    index: currentIndex,
-                    previousParams: { watermarkIndex: previousIndex }
-                });
+                // 如果水印选择不同，记录操作并更新预览
+                if (previousIndex !== params.watermarkIndex) {
+                    recordAction({
+                        type: 'watermarkChange',
+                        index: currentIndex,
+                        previousParams: { watermarkIndex: previousIndex },
+                        newParams: { watermarkIndex: params.watermarkIndex }
+                    });
+                }
 
-                // 更新预览选中状态
+                // 更新水印预览
                 updateWatermarkPreview();
             }
 
@@ -1100,7 +1743,6 @@
             }
 
             function processImages() {
-                // 重置变量
                 imageFiles = Array.from(document.getElementById('image-input').files);
 
                 if (imageFiles.length === 0) {
@@ -1115,7 +1757,6 @@
                 redoStack = [];
                 document.querySelector('.swiper-wrapper').innerHTML = '';
 
-                // 销毁Swiper实例
                 if (swiper) {
                     swiper.destroy(true, true);
                 }
@@ -1123,36 +1764,44 @@
                 document.getElementById('progress-bar').style.display = 'block';
                 document.getElementById('progress-bar-inner').style.width = '0%';
 
-                // 加载默认水印图片
-                let defaultWatermark;
-                if (watermarkImages.length > 0) {
-                    defaultWatermark = watermarkImages[0];
-                } else {
-                    defaultWatermark = new Image();
-                    defaultWatermark.src = 'signature.png';
-                }
+                let defaultWatermark = watermarkImages.length > 0 ? watermarkImages[0] : new Image();
+                if (!defaultWatermark.src) defaultWatermark.src = 'signature.png';
 
-                // 开始处理图片
                 let loadedCount = 0;
                 imageFiles.forEach((imageFile, index) => {
                     const img = new Image();
+                    img.crossOrigin = "Anonymous";  // 允许跨域请求
                     img.src = URL.createObjectURL(imageFile);
                     img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const context = canvas.getContext('2d');
+                    // 检查图像是否可访问
+                    try {
+                        const testCanvas = document.createElement('canvas');
+                        const testContext = testCanvas.getContext('2d');
+                        testCanvas.width = img.width;
+                        testCanvas.height = img.height;
+                        testContext.drawImage(img, 0, 0);
+                        testContext.getImageData(0, 0, 1, 1);  // 尝试访问图像数据
+                    } catch (e) {
+                        if (e instanceof DOMException && e.name === "SecurityError") {
+                            console.warn("跨域图像，无法操作画布。使用默认颜色或跳过颜色匹配。");
+                            canvasList[index].isCrossOrigin = true;  // 标记为跨域图像
+                        }
+                    }
 
-                        // 设置画布尺寸
-                        canvas.width = img.width;
-                        canvas.height = img.height;
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.fillStyle = '#ffffff';
+                    context.fillRect(0, 0, canvas.width, canvas.height);
+                    context.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                        // 绘制原始图片
-                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                        // 默认参数
-                        const defaultParams = {
-                            canvas: canvas,
-                            context: context,
-                            img: img,
+                    const defaultParams = {
+                        canvas: canvas,
+                        context: context,
+                        img: img,
+                        isCrossOrigin: false,  // 默认不是跨域图像
                             position: document.getElementById('position-select').value,
                             scale: parseInt(document.getElementById('scale-slider').value) / 100,
                             rotation: parseInt(document.getElementById('rotation-slider').value),
@@ -1165,18 +1814,14 @@
                             watermarkImage: watermarkImages[defaultWatermarkIndex] || defaultWatermark
                         };
 
-                        // 自动匹配签名颜色
                         autoSelectSignatureColor(context, img, defaultParams);
 
                         canvasList.push(defaultParams);
-
                         loadedCount++;
-                        // 更新进度条
                         const progress = Math.round((loadedCount / imageFiles.length) * 100);
                         document.getElementById('progress-bar-inner').style.width = progress + '%';
 
                         if (loadedCount === imageFiles.length) {
-                            // 所有图片加载完成
                             document.getElementById('progress-bar').style.display = 'none';
                             document.getElementById('download-current-button').style.display = 'block';
                             document.getElementById('download-all-button').style.display = 'block';
@@ -1185,10 +1830,21 @@
                             showCurrentImage();
                         }
                     };
+                    // 记录canvas列表并继续加载
+                    canvasList.push(defaultParams);
                 });
             }
 
             function autoSelectSignatureColor(context, img, params) {
+                try {
+                    const imageData = context.getImageData(0, 0, img.width, img.height);
+                    // 颜色匹配逻辑...
+                } catch (error) {
+                    if (error instanceof DOMException && error.name === "SecurityError") {
+                        console.warn("无法执行颜色匹配：画布被跨域图像污染");
+                        params.colorHex = "#000000"; // 使用默认颜色
+                    }
+                }
                 // 计算签名尺寸
                 const shorterSide = Math.min(img.width, img.height);
                 const watermarkSize = shorterSide * params.scale;
@@ -1267,74 +1923,95 @@
                     watermarkImage
                 } = params;
 
-                // 清除之前的内容
+                // 清空画布并绘制原始图片
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                // 绘制原始图片
                 context.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                // 计算水印尺寸（根据缩放比例）
+                // 定义初始比例
+                const initialScale = 0.5; // 初始比例为 50%，可以根据需要调整
+                const finalScale = scale * initialScale; // 结合用户提供的 scale 值调整
+
+                // 计算缩放后的水印尺寸
                 const shorterSide = Math.min(canvas.width, canvas.height);
-                const watermarkSize = shorterSide * scale;
-
-                // 重新着色签名
-                const coloredSignature = recolorSignature(watermarkImage, colorHex);
-
-                // 缩放后的水印尺寸
                 const scaleFactor = (shorterSide / watermarkImage.width) * scale;
                 const watermarkWidth = watermarkImage.width * scaleFactor;
                 const watermarkHeight = watermarkImage.height * scaleFactor;
 
-                // 计算水印位置
+                // 重新着色水印
+                const coloredSignature = recolorSignature(watermarkImage, colorHex);
+
+                // 根据位置设置锚点坐标
                 let positionX, positionY;
+                const padding_TB = 200; // 上下内边距
+                const padding_LR = 200; // 左右内边距
+
                 switch (position) {
                     case 'bottom-center':
-                        positionX = (canvas.width - watermarkWidth) / 2 + offsetX;
-                        positionY = canvas.height - watermarkHeight + offsetY;
+                        positionX = canvas.width / 2 + offsetX;
+                        positionY = canvas.height - padding_TB + offsetY;
                         break;
                     case 'bottom-left':
-                        positionX = 10 + offsetX;
-                        positionY = canvas.height - watermarkHeight + offsetY;
+                        positionX = padding_LR + offsetX;
+                        positionY = canvas.height - padding_TB + offsetY;
                         break;
                     case 'bottom-right':
-                        positionX = canvas.width - watermarkWidth - 10 + offsetX;
-                        positionY = canvas.height - watermarkHeight + offsetY;
+                        positionX = canvas.width - padding_LR + offsetX;
+                        positionY = canvas.height - padding_TB + offsetY;
                         break;
                     case 'top-center':
-                        positionX = (canvas.width - watermarkWidth) / 2 + offsetX;
-                        positionY = 0 + offsetY;
+                        positionX = canvas.width / 2 + offsetX;
+                        positionY = padding_TB + offsetY;
                         break;
                     case 'top-left':
-                        positionX = 10 + offsetX;
-                        positionY = 0 + offsetY;
+                        positionX = padding_LR + offsetX;
+                        positionY = padding_TB + offsetY;
                         break;
                     case 'top-right':
-                        positionX = canvas.width - watermarkWidth - 10 + offsetX;
-                        positionY = 0 + offsetY;
+                        positionX = canvas.width - padding_LR + offsetX;
+                        positionY = padding_TB + offsetY;
+                        break;
+                    case 'center':
+                        positionX = canvas.width / 2 + offsetX;
+                        positionY = canvas.height / 2 + offsetY;
                         break;
                 }
-
-                // 确保水印在照片内
-                positionX = Math.max(0, Math.min(positionX, canvas.width - watermarkWidth));
-                positionY = Math.max(0, Math.min(positionY, canvas.height - watermarkHeight));
-
                 context.save();
-                // 将原点移动到水印中心
-                context.translate(positionX + watermarkWidth / 2, positionY + watermarkHeight / 2);
+
+                // 将绘制基点设置为水印的中心点
+                context.translate(positionX, positionY);
                 context.rotate(rotation * Math.PI / 180);
+                context.scale(scale, scale); // 以几何中心进行缩放
                 context.globalAlpha = opacity;
 
-                // 添加阴影
+                // 计算绘制水印的起始点，将几何中心对齐
+                const drawX = -watermarkWidth / 2;
+                const drawY = -watermarkHeight / 2;
+
+                // 添加阴影（如果启用）
                 if (shadowEnabled) {
                     context.shadowColor = 'rgba(0, 0, 0, 0.5)';
                     context.shadowBlur = 5;
                     context.shadowOffsetX = 3;
                     context.shadowOffsetY = 3;
+                } else {
+                    context.shadowColor = 'transparent';
                 }
 
-                // 绘制签名，位置调整为使其中心对齐
-                context.drawImage(coloredSignature, -watermarkWidth / 2, -watermarkHeight / 2, watermarkWidth, watermarkHeight);
-
+                // 绘制水印
+                context.drawImage(coloredSignature, drawX, drawY, watermarkWidth, watermarkHeight);
                 context.restore();
+
+                // 如果需要绘制选中框
+                if (params.isDragging) {
+                    context.save();
+                    context.lineWidth = 1;
+                    context.strokeStyle = '#00BFFF';
+                    context.setLineDash([5, 3]);
+                    context.translate(positionX, positionY);
+                    context.rotate(rotation * Math.PI / 180);
+                    context.strokeRect(drawX, drawY, watermarkWidth, watermarkHeight);
+                    context.restore();
+                }
             }
 
             function recolorSignature(watermarkImage, colorHex) {
@@ -1366,6 +2043,9 @@
                     slide.className = 'swiper-slide';
                     slide.appendChild(item.canvas);
                     swiperWrapper.appendChild(slide);
+
+                    // 初始化手势操作
+                    initializeGestures(item, index);
                 });
 
                 swiper = new Swiper('.swiper-container', {
@@ -1384,6 +2064,202 @@
                 });
             }
 
+            function initializeGestures(params, index) {
+                const hammertime = new Hammer(params.canvas);
+                hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+                hammertime.get('pinch').set({ enable: true });
+                hammertime.get('rotate').set({ enable: true });
+
+                let initialScale = params.scale;
+                let initialRotation = params.rotation;
+                let initialOffsetX = params.offsetX;
+                let initialOffsetY = params.offsetY;
+
+                // 移动事件
+                hammertime.on('panmove', function(ev) {
+                    if (currentIndex !== index) return;
+                    params.offsetX = initialOffsetX + ev.deltaX;
+                    params.offsetY = initialOffsetY + ev.deltaY;
+                    updateControlsForCurrentIndex();
+                    drawWatermark(params);
+                });
+
+                // 结束移动事件
+                hammertime.on('panend', function(ev) {
+                    if (currentIndex !== index) return;
+                    initialOffsetX = params.offsetX;
+                    initialOffsetY = params.offsetY;
+                    recordAction({
+                        type: 'offsetChange',
+                        index: currentIndex,
+                        previousParams: {
+                            offsetX: initialOffsetX - ev.deltaX,
+                            offsetY: initialOffsetY - ev.deltaY
+                        }
+                    });
+                });
+
+                let pinchStart = false;
+                hammertime.on('pinchstart', function(ev) {
+                    if (currentIndex !== index) return;
+                    pinchStart = true;
+                    initialScale = params.scale;
+                    initialRotation = params.rotation;
+                });
+
+                hammertime.on('pinchmove', function(ev) {
+                    if (currentIndex !== index || !pinchStart) return;
+                    params.scale = initialScale * ev.scale;
+                    params.rotation = initialRotation + ev.rotation;
+                    updateControlsForCurrentIndex();
+                    drawWatermark(params);
+                });
+
+                hammertime.on('pinchend', function(ev) {
+                    if (currentIndex !== index) return;
+                    pinchStart = false;
+                    initialScale = params.scale;
+                    initialRotation = params.rotation;
+                    recordAction({
+                        type: 'scaleRotationChange',
+                        index: currentIndex,
+                        previousParams: {
+                            scale: initialScale / ev.scale,
+                            rotation: initialRotation - ev.rotation
+                        }
+                    });
+                });
+
+                // 添加鼠标事件监听器
+                let isDragging = false;
+                let startX, startY;
+
+                params.canvas.addEventListener('mousedown', function(e) {
+                    if (currentIndex !== index) return;
+                    const rect = params.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    // 仅当点击在水印上时启用拖拽
+                    if (isPointOnWatermark(x, y, params)) {
+                        isDragging = true;
+                        startX = x;
+                        startY = y;
+                        initialOffsetX = params.offsetX;
+                        initialOffsetY = params.offsetY;
+                        params.isDragging = true;
+                    }
+                });
+
+                params.canvas.addEventListener('mousemove', function(e) {
+                    if (currentIndex !== index) return;
+                    if (isDragging) {
+                        const rect = params.canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const deltaX = x - startX;
+                        const deltaY = y - startY;
+                        params.offsetX = initialOffsetX + deltaX;
+                        params.offsetY = initialOffsetY + deltaY;
+                        updateControlsForCurrentIndex();
+                        drawWatermark(params);
+                    }
+                });
+
+                params.canvas.addEventListener('mouseup', function(e) {
+                    if (currentIndex !== index) return;
+                    if (isDragging) {
+                        isDragging = false;
+                        params.isDragging = false;
+
+                        // 更新初始偏移量
+                        initialOffsetX = params.offsetX;
+                        initialOffsetY = params.offsetY;
+
+                        // 记录操作
+                        recordAction({
+                            type: 'offsetChange',
+                            index: currentIndex,
+                            previousParams: {
+                                offsetX: initialOffsetX,
+                                offsetY: initialOffsetY
+                            }
+                        });
+                    }
+                });
+
+                params.canvas.addEventListener('mouseleave', function(e) {
+                    if (currentIndex !== index) return;
+                    if (isDragging) {
+                        isDragging = false;
+                        params.isDragging = false;
+                    }
+                });
+            }       
+
+            function isPointOnWatermark(x, y, params) {
+                const { positionX, positionY, watermarkWidth, watermarkHeight } = calculateWatermarkPosition(params);
+
+                // 中心点与点击点的相对位置
+                const centerX = positionX + watermarkWidth / 2;
+                const centerY = positionY + watermarkHeight / 2;
+                const dx = x - centerX;
+                const dy = y - centerY;
+
+                // 考虑旋转角度，将点击点旋转回水印未旋转状态
+                const angle = -params.rotation * Math.PI / 180;
+                const rotatedX = dx * Math.cos(angle) - dy * Math.sin(angle);
+                const rotatedY = dx * Math.sin(angle) + dy * Math.cos(angle);
+
+                // 检查旋转后的点是否在水印矩形范围内
+                return Math.abs(rotatedX) <= watermarkWidth / 2 && Math.abs(rotatedY) <= watermarkHeight / 2;
+            }
+
+            function calculateWatermarkPosition(params) {
+                const {
+                    canvas,
+                    position,
+                    scale,
+                    offsetX,
+                    offsetY,
+                    watermarkImage
+                } = params;
+
+                const shorterSide = Math.min(canvas.width, canvas.height);
+                const scaleFactor = (shorterSide / watermarkImage.width) * scale;
+                const watermarkWidth = watermarkImage.width * scaleFactor;
+                const watermarkHeight = watermarkImage.height * scaleFactor;
+
+                let positionX, positionY;
+                switch (position) {
+                    case 'bottom-center':
+                        positionX = (canvas.width - watermarkWidth) / 2 + offsetX;
+                        positionY = canvas.height - watermarkHeight + offsetY;
+                        break;
+                    case 'bottom-left':
+                        positionX = 10 + offsetX;
+                        positionY = canvas.height - watermarkHeight + offsetY;
+                        break;
+                    case 'bottom-right':
+                        positionX = canvas.width - watermarkWidth - 10 + offsetX;
+                        positionY = canvas.height - watermarkHeight + offsetY;
+                        break;
+                    case 'top-center':
+                        positionX = (canvas.width - watermarkWidth) / 2 + offsetX;
+                        positionY = 0 + offsetY;
+                        break;
+                    case 'top-left':
+                        positionX = 10 + offsetX;
+                        positionY = 0 + offsetY;
+                        break;
+                    case 'top-right':
+                        positionX = canvas.width - watermarkWidth - 10 + offsetX;
+                        positionY = 0 + offsetY;
+                        break;
+                }
+
+                return { positionX, positionY, watermarkWidth, watermarkHeight };
+            }
             function showCurrentImage() {
                 swiper.slideTo(currentIndex, 0);
                 updateControlsForCurrentIndex();
@@ -1395,21 +2271,26 @@
 
                 document.getElementById('position-select').value = params.position;
                 document.getElementById('scale-slider').value = params.scale * 100;
-                document.getElementById('scale-input').value = params.scale * 100;
+                document.getElementById('scale-input').value = Math.round(params.scale * 100);
                 document.getElementById('rotation-slider').value = params.rotation;
-                document.getElementById('rotation-input').value = params.rotation;
+                document.getElementById('rotation-input').value = Math.round(params.rotation);
                 document.getElementById('offset-x-slider').value = params.offsetX;
-                document.getElementById('offset-x-input').value = params.offsetX;
+                document.getElementById('offset-x-input').value = Math.round(params.offsetX);
                 document.getElementById('offset-y-slider').value = params.offsetY;
-                document.getElementById('offset-y-input').value = params.offsetY;
+                document.getElementById('offset-y-input').value = Math.round(params.offsetY);
                 document.getElementById('opacity-slider').value = params.opacity * 100;
                 document.getElementById('opacity-input').value = params.opacity * 100;
 
                 // 更新颜色选择器和按钮状态
                 document.getElementById('color-picker').value = params.colorHex;
-                document.getElementById('color-black-button').classList.toggle('active', params.colorHex.toUpperCase() === '#000000');
-                document.getElementById('color-white-button').classList.toggle('active', params.colorHex.toUpperCase() === '#FFFFFF');
-
+                document.getElementById('color-black-button').classList.toggle(
+                    'active',
+                    params.colorHex && params.colorHex.toUpperCase() === '#000000'
+                );
+                document.getElementById('color-white-button').classList.toggle(
+                    'active',
+                    params.colorHex && params.colorHex.toUpperCase() === '#FFFFFF'
+                );
                 // 更新阴影复选框
                 document.getElementById('shadow-checkbox').checked = params.shadowEnabled;
 
@@ -1629,14 +2510,69 @@
                     reader.readAsText(file);
                 }
             }
+            
+            function applyToAll() {
+                // 询问用户是否希望优先使用自动匹配颜色
+                const useAutoColorMatch = confirm("是否要优先使用自动匹配颜色？");
+
+                const currentParams = canvasList[currentIndex];
+                const previousParamsList = canvasList.map(params => ({ ...params }));
+
+                document.getElementById('progress-bar').style.display = 'block';
+                document.getElementById('progress-bar-inner').style.width = '0%';
+
+                let processedCount = 0;
+                canvasList.forEach((params, index) => {
+                    if (index !== currentIndex) {
+                        Object.assign(params, {
+                            position: currentParams.position,
+                            scale: currentParams.scale,
+                            rotation: currentParams.rotation,
+                            offsetX: currentParams.offsetX,
+                            offsetY: currentParams.offsetY,
+                            opacity: currentParams.opacity,
+                            colorHex: useAutoColorMatch ? autoSelectSignatureColor(params.context, params.img, params) : currentParams.colorHex,
+                            shadowEnabled: currentParams.shadowEnabled,
+                            watermarkIndex: currentParams.watermarkIndex,
+                            watermarkImage: currentParams.watermarkImage
+                        });
+                        drawWatermark(params);
+                    }
+                    processedCount++;
+                    // 更新进度条
+                    const progress = Math.round((processedCount / canvasList.length) * 100);
+                    document.getElementById('progress-bar-inner').style.width = progress + '%';
+
+                    if (processedCount === canvasList.length) {
+                        document.getElementById('progress-bar').style.display = 'none';
+                    }
+                });
+
+                // 记录用户操作
+                actionHistory.push({
+                    type: 'applyAll',
+                    previousParamsList: previousParamsList,
+                    newParams: { ...currentParams }
+                });
+
+                redoStack = []; // 清空redoStack
+            }
 
             // 初始化时更新预设列表
             updatePresetList();
 
             function downloadCurrentImage() {
                 const params = canvasList[currentIndex];
-                drawWatermark(params);
+                
+                // 检查跨域标志，如果是跨域图像直接返回
+                if (params.isCrossOrigin) {
+                    alert("跨域图像无法下载，请使用同源图像。");
+                    return;
+                }
 
+                drawWatermark(params);  // 尝试绘制水印，确保绘制逻辑处理了跨域情况
+
+                // 尝试将 canvas 转换为 blob
                 params.canvas.toBlob((blob) => {
                     if (!blob) {
                         alert('生成图片失败，请重试。');
@@ -1644,20 +2580,77 @@
                     }
                     let originalName = imageFiles[currentIndex].name;
                     let fileName = originalName.replace(/(\.\w+)$/, '_WaterMark$1');
-                    fileName = sanitizeFileName(fileName);
+                    fileName = sanitizeFileName(fileName);  // 清理文件名中的非法字符
                     let version = 1;
 
                     // 模拟文件名冲突处理
                     while (processedImages.includes(fileName)) {
                         version++;
-                        fileName = originalName.replace(/(\.\w+)$/, `_WaterMark_v${version}$1`);
-                        fileName = sanitizeFileName(fileName);
+                        fileName = originalName.replace(/(\.\w+)$/, '_WaterMark_v' + version + '$1');
+                        fileName = sanitizeFileName(fileName);  // 清理文件名
                     }
 
-                    processedImages.push(fileName);
+                    processedImages.push(fileName);  // 记录已处理的文件名
+                    saveAs(blob, fileName);  // 下载图像文件
+                }, 'image/jpeg', 1);  // 使用 JPEG 格式，压缩质量设置为 95%
+            }
+            
+            function downloadAllImages() {
+                if (canvasList.length === 0) {
+                    alert('没有可下载的图片。');
+                    return;
+                }
 
-                    saveAs(blob, fileName);
-                }, 'image/jpeg', 0.95);
+                const zip = new JSZip();  // 创建一个新的 Zip 文件
+                const folderName = 'watermarked_images';  // 文件夹名
+                const imgFolder = zip.folder(folderName);  // 在 Zip 文件中创建一个文件夹
+
+                let processedCount = 0;  // 计数器，用于计算已处理的文件
+                document.getElementById('progress-bar').style.display = 'block';  // 显示进度条
+                document.getElementById('progress-bar-inner').style.width = '0%';  // 初始化进度条
+
+                let fileNameCounts = {};  // 用于处理文件名冲突的计数器
+
+                canvasList.forEach((item, index) => {
+                    // 处理每个 canvas，生成图像二进制数据
+                    drawWatermark(item);  // 绘制水印
+                    item.canvas.toBlob((blob) => {
+                        if (!blob) {
+                            alert('生成图片失败，请重试。');
+                            return;
+                        }
+
+                        const imageFile = imageFiles[index];  // 获取对应的图片文件
+                        let originalName = imageFile.name;
+                        let fileName = originalName.replace(/(\.\w+)$/, '_WaterMark$1');  // 添加 _WaterMark 后缀
+                        fileName = sanitizeFileName(fileName);  // 清理文件名中的非法字符
+
+                        // 处理文件名冲突
+                        if (fileNameCounts[fileName]) {
+                            fileNameCounts[fileName]++;
+                            const version = fileNameCounts[fileName];  // 版本号
+                            fileName = originalName.replace(/(\.\w+)$/, '_WaterMark_v' + version + '$1');
+                            fileName = sanitizeFileName(fileName);  // 清理文件名
+                        } else {
+                            fileNameCounts[fileName] = 1;
+                        }
+
+                        imgFolder.file(fileName, blob);  // 将图像添加到 Zip 文件中
+                        processedCount++;  // 增加计数器
+
+                        // 更新进度条
+                        const progress = Math.round((processedCount / canvasList.length) * 100);
+                        document.getElementById('progress-bar-inner').style.width = progress + '%';
+
+                        // 如果所有图像都已处理完，生成并下载 Zip 文件
+                        if (processedCount === canvasList.length) {
+                            document.getElementById('progress-bar').style.display = 'none';
+                            zip.generateAsync({ type: 'blob' }).then((content) => {
+                                saveAs(content, folderName + '.zip');  // 下载 Zip 文件
+                            });
+                        }
+                    }, 'image/jpeg', 1.00);  // 使用 JPEG 格式并压缩质量为 100%
+                });
             }
 
             function downloadAllImages() {
@@ -1666,58 +2659,64 @@
                     return;
                 }
 
-                const zip = new JSZip();
+                const zip = new JSZip();  // 创建一个新的 Zip 文件
                 const folderName = 'watermarked_images';
-                const imgFolder = zip.folder(folderName);
+                const imgFolder = zip.folder(folderName);  // 在 Zip 文件中创建一个文件夹
 
-                let processedCount = 0;
-                document.getElementById('progress-bar').style.display = 'block';
-                document.getElementById('progress-bar-inner').style.width = '0%';
+                let processedCount = 0;  // 计数器，用于计算已处理的文件
+                document.getElementById('progress-bar').style.display = 'block';  // 显示进度条
+                document.getElementById('progress-bar-inner').style.width = '0%';  // 初始化进度条
 
-                let fileNameCounts = {};
+                let fileNameCounts = {};  // 用于处理文件名冲突的计数器
 
                 canvasList.forEach((item, index) => {
-                    drawWatermark(item);
+                    // 处理每个 canvas，生成图像二进制数据
+                    drawWatermark(item);  // 绘制水印
                     item.canvas.toBlob((blob) => {
                         if (!blob) {
                             alert('生成图片失败，请重试。');
                             return;
                         }
-                        const imageFile = imageFiles[index];
+
+                        const imageFile = imageFiles[index];  // 获取对应的图片文件
                         let originalName = imageFile.name;
-                        let fileName = originalName.replace(/(\.\w+)$/, '_WaterMark$1');
-                        fileName = sanitizeFileName(fileName);
+                        let fileName = originalName.replace(/(\.\w+)$/, '_WaterMark$1');  // 添加 _WaterMark 后缀
+                        fileName = sanitizeFileName(fileName);  // 清理文件名中的非法字符
 
                         // 处理文件名冲突
                         if (fileNameCounts[fileName]) {
                             fileNameCounts[fileName]++;
-                            const version = fileNameCounts[fileName];
+                            const version = fileNameCounts[fileName];  // 版本号
                             fileName = originalName.replace(/(\.\w+)$/, `_WaterMark_v${version}$1`);
-                            fileName = sanitizeFileName(fileName);
+                            fileName = sanitizeFileName(fileName);  // 清理文件名
                         } else {
                             fileNameCounts[fileName] = 1;
                         }
 
-                        imgFolder.file(fileName, blob);
-                        processedCount++;
+                        imgFolder.file(fileName, blob);  // 将图像添加到 Zip 文件中
+                        processedCount++;  // 增加计数器
 
                         // 更新进度条
                         const progress = Math.round((processedCount / canvasList.length) * 100);
                         document.getElementById('progress-bar-inner').style.width = progress + '%';
 
+                        // 如果所有图像都已处理完，生成并下载 Zip 文件
                         if (processedCount === canvasList.length) {
                             document.getElementById('progress-bar').style.display = 'none';
                             zip.generateAsync({ type: 'blob' }).then((content) => {
-                                saveAs(content, folderName + '.zip');
+                                saveAs(content, folderName + '.zip');  // 下载 Zip 文件
                             });
                         }
-                    }, 'image/jpeg', 0.95);
+                    }, 'image/jpeg', 1.00);  // 使用 JPEG 格式并压缩质量为 95%
                 });
             }
 
+            // 清理文件名中的非法字符
             function sanitizeFileName(fileName) {
-                return fileName.replace(/[\/\\:*?"<>|]/g, '_');
+                return fileName.replace(/[\/\\:*?"<>|]/g, '_');  // 将非法字符替换为下划线
             }
+            
         </script>
-    </body>
-    </html>
+    </div>
+</body>
+</html>
