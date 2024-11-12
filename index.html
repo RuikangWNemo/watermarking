@@ -6,7 +6,7 @@
     <title>睿康的批量添加水印工具</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Open+Sans&family=Merriweather&family=Noto+Serif&family=Noto+Sans+SC&family=Noto+Serif+SC&family=Times+New+Roman&family=Source+Serif+Pro&family=EB+Garamond&family=Indie+Flower&family=Dancing+Script&family=Pacifico&family=Satisfy&family=Shadows+Into+Light&family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&family=Long+Cang&family=Lobster&family=Great+Vibes&family=Abril+Fatface&family=Cinzel+Decorative&family=Bangers&family=Fredoka+One&family=Chewy&family=Permanent+Marker&family=Comic+Neue&family=Press+Start+2P&family=VT323&family=Monofett&family=Creepster&family=UnifrakturCook&family=Metal+Mania&family=Playfair+Display&family=Montserrat&family=Raleway&family=Anton&display=swap" rel="stylesheet">
     <style>
         /* 全局样式 */
         body {
@@ -108,7 +108,7 @@
             color: #2c3e50;
         }
         .control-group input[type="range"],
-        .control-group input[type="color"],
+        .control-group input[type="color"]
         .control-group select,
         .control-group input[type="number"] {
             width: 100%;
@@ -537,6 +537,9 @@
                 bottom: 10px;
                 right: 10px;
             }
+            #shortcut-tips {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -605,12 +608,81 @@
                         <input type="text" id="text-watermark-input" placeholder="请输入水印文字">
                         <label for="font-select">选择字体：</label>
                         <select id="font-select">
-                            <option value="Arial">Arial</option>
-                            <option value="Handlee">Handlee</option>
+                            <!-- 手写/草书风格 -->
+                                 <!-- 中文艺术字体 -->
+                            <optgroup label="中文艺术字体">
+                                <option value="Noto Sans SC">思源黑体 (Noto Sans SC)</option>
+                                <option value="Noto Serif SC">思源宋体 (Noto Serif SC)</option>
+                                <option value="ZCOOL KuaiLe">站酷快乐体 (ZCOOL KuaiLe)</option>
+                                <option value="ZCOOL QingKe HuangYou">站酷庆科黄油体 (ZCOOL QingKe HuangYou)</option>
+                                <option value="ZCOOL XiaoWei">站酷小微 (ZCOOL XiaoWei)</option>
+                                <option value="Ma Shan Zheng">马善政 (Ma Shan Zheng)</option>
+                                <option value="Long Cang">龙藏 (Long Cang)</option>
+                            </optgroup>
+                            
+                            <optgroup label="手写/草书风格">
+                                <option value="Indie Flower">Indie Flower</option>
+                                <option value="Dancing Script">Dancing Script</option>
+                                <option value="Pacifico">Pacifico</option>
+                                <option value="Satisfy">Satisfy</option>
+                                <option value="Shadows Into Light">Shadows Into Light</option>
+                            </optgroup>
+                        
+                            <!-- 复古与优雅风格 -->
+                            <optgroup label="复古与优雅风格">
+                                <option value="Lobster">Lobster</option>
+                                <option value="Great Vibes">Great Vibes</option>
+                                <option value="Abril Fatface">Abril Fatface</option>
+                                <option value="Cinzel Decorative">Cinzel Decorative</option>
+                            </optgroup>
+                        
+                            <!-- 卡通与俏皮风格 -->
+                            <optgroup label="卡通与俏皮风格">
+                                <option value="Bangers">Bangers</option>
+                                <option value="Fredoka One">Fredoka One</option>
+                                <option value="Chewy">Chewy</option>
+                                <option value="Permanent Marker">Permanent Marker</option>
+                                <option value="Comic Neue">Comic Neue</option>
+                            </optgroup>
+                        
+                            <!-- 像素风格 -->
+                            <optgroup label="像素风格">
+                                <option value="Press Start 2P">Press Start 2P</option>
+                                <option value="VT323">VT323</option>
+                                <option value="Monofett">Monofett</option>
+                            </optgroup>
+                        
+                            <!-- 恐怖/奇幻风格 -->
+                            <optgroup label="恐怖/奇幻风格">
+                                <option value="Creepster">Creepster</option>
+                                <option value="UnifrakturCook">UnifrakturCook</option>
+                                <option value="Metal Mania">Metal Mania</option>
+                            </optgroup>
+                        
+                            <!-- 时尚与现代风格 -->
+                            <optgroup label="时尚与现代风格">
+                                <option value="Playfair Display">Playfair Display</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="Raleway">Raleway</option>
+                                <option value="Anton">Anton</option>
+                            </optgroup>
+
+                                <!-- 正式风格 -->
+                            <optgroup label="正式风格">
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Merriweather">Merriweather</option>
+                                <option value="Noto Serif">Noto Serif</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="Source Serif Pro">Source Serif Pro</option>
+                                <option value="EB Garamond">EB Garamond</option>
+                            </optgroup>
+
+                        </select>
                             <!-- 添加其他字体选项 -->
                         </select>
                         <label for="font-size-input">字体大小：</label>
-                        <input type="number" id="font-size-input" value="48" min="10" max="200">
+                        <input type="number" id="font-size-input" value="60" min="10" max="200">
                         <button id="save-text-button" class="small-button"><i class="fas fa-save"></i> 保存文字水印</button>
                         <button id="cancel-text-button" class="small-button"><i class="fas fa-times"></i> 取消</button>
                     </div>
@@ -634,54 +706,58 @@
             <div id="left-controls">
                 <!-- 参数调整的控件 -->
                 <div class="control-group">
-                    <h3><i class="fas fa-sliders-h"></i> 调整参数</h3>
-                    <label for="position-select">水印位置：</label>
-                    <select id="position-select">
-                        <option value="bottom-center">底部居中</option>
-                        <option value="bottom-left">左下角</option>
-                        <option value="bottom-right">右下角</option>
-                        <option value="top-center">顶部居中</option>
-                        <option value="top-left">左上角</option>
-                        <option value="top-right">右上角</option>
-                    </select>
-                    <label for="scale-slider">缩放比例：</label>
-                    <div class="input-group">
-                        <input type="number" id="scale-input" value="20" min="10" max="100">
-                        <span>%</span>
+                    <button type="button" class="collapsible active"><i class="fas fa-sliders-h"></i> 调整参数</button>
+                    <div class="content show">
+                        <label for="position-select">水印位置：</label>
+                        <select id="position-select">
+                            <option value="bottom-center">底部居中</option>
+                            <option value="bottom-left">左下角</option>
+                            <option value="bottom-right">右下角</option>
+                            <option value="top-center">顶部居中</option>
+                            <option value="top-left">左上角</option>
+                            <option value="top-right">右上角</option>
+                        </select>
+                        <label for="scale-slider">缩放比例：</label>
+                        <div class="input-group">
+                            <input type="number" id="scale-input" value="20" min="10" max="100">
+                            <span>%</span>
+                        </div>
+                        <input type="range" id="scale-slider" min="10" max="100" value="50">
+                        <label for="rotation-slider">旋转角度：</label>
+                        <div class="input-group">
+                            <input type="number" id="rotation-input" value="0" min="-180" max="180">
+                            <span>°</span>
+                        </div>
+                        <input type="range" id="rotation-slider" min="-180" max="180" value="0">
+                        <label for="offset-x-slider">水平偏移：</label>
+                        <div class="input-group">
+                            <input type="number" id="offset-x-input" value="0" min="-2000" max="2000">
+                            <span>px</span>
+                        </div>
+                        <input type="range" id="offset-x-slider" min="-2000" max="2000" value="0">
+                        <label for="offset-y-slider">垂直偏移：</label>
+                        <div class="input-group">
+                            <input type="number" id="offset-y-input" value="0" min="-2000" max="2000">
+                            <span>px</span>
+                        </div>
+                        <input type="range" id="offset-y-slider" min="-2000" max="2000" value="0">
+                        <label for="opacity-slider">透明度：</label>
+                        <div class="input-group">
+                            <input type="number" id="opacity-input" value="100" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <input type="range" id="opacity-slider" min="0" max="100" value="100">
                     </div>
-                    <input type="range" id="scale-slider" min="10" max="100" value="50">
-                    <label for="rotation-slider">旋转角度：</label>
-                    <div class="input-group">
-                        <input type="number" id="rotation-input" value="0" min="-180" max="180">
-                        <span>°</span>
-                    </div>
-                    <input type="range" id="rotation-slider" min="-180" max="180" value="0">
-                    <label for="offset-x-slider">水平偏移：</label>
-                    <div class="input-group">
-                        <input type="number" id="offset-x-input" value="0" min="-2000" max="2000">
-                        <span>px</span>
-                    </div>
-                    <input type="range" id="offset-x-slider" min="-2000" max="2000" value="0">
-                    <label for="offset-y-slider">垂直偏移：</label>
-                    <div class="input-group">
-                        <input type="number" id="offset-y-input" value="0" min="-2000" max="2000">
-                        <span>px</span>
-                    </div>
-                    <input type="range" id="offset-y-slider" min="-2000" max="2000" value="0">
-                    <label for="opacity-slider">透明度：</label>
-                    <div class="input-group">
-                        <input type="number" id="opacity-input" value="100" min="0" max="100">
-                        <span>%</span>
-                    </div>
-                    <input type="range" id="opacity-slider" min="0" max="100" value="100">
                 </div>
                 <!-- 操作按钮 -->
                 <div class="control-group">
-                    <h3><i class="fas fa-cogs"></i> 操作</h3>
-                    <button id="undo-button" class="small-button"><i class="fas fa-undo"></i> 撤销</button>
-                    <button id="redo-button" class="small-button"><i class="fas fa-redo"></i> 还原</button>
-                    <button id="download-current-button" class="action-button"><i class="fas fa-download"></i> 保存当前照片</button>
-                    <button id="download-all-button" class="action-button"><i class="fas fa-cloud-download-alt"></i> 保存所有照片</button>
+                    <button type="button" class="collapsible active"><i class="fas fa-cogs"></i> 操作</button>
+                    <div class="content show">
+                        <button id="undo-button" class="small-button"><i class="fas fa-undo"></i> 撤销</button>
+                        <button id="redo-button" class="small-button"><i class="fas fa-redo"></i> 还原</button>
+                        <button id="download-current-button" class="action-button"><i class="fas fa-download"></i> 保存当前照片</button>
+                        <button id="download-all-button" class="action-button"><i class="fas fa-cloud-download-alt"></i> 保存所有照片</button>
+                    </div>
                 </div>
             </div>
             <!-- 中间：照片查看区域 -->
@@ -693,49 +769,63 @@
                     </div>
                     <!-- 添加分页器 -->
                     <div class="swiper-pagination"></div>
+                    <!-- 添加导航按钮 -->
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <style>
+                        /* 初始隐藏导航按钮 */
+                        .swiper-button-next,
+                        .swiper-button-prev {
+                            display: none;
+                        }
+                    </style>
                 </div>
             </div>
             <!-- 右侧：签名设置、预设管理 -->
             <div id="right-controls">
                 <!-- 签名设置 -->
                 <div class="control-group">
-                    <h3><i class="fas fa-signature"></i> 签名设置</h3>
-                    <label>签名颜色：</label>
-                    <button id="color-black-button" class="small-button"><i class="fas fa-tint"></i> 黑色</button>
-                    <button id="color-white-button" class="small-button"><i class="fas fa-tint"></i> 白色</button>
-                    <label for="color-picker">自定义颜色：</label>
-                    <input type="color" id="color-picker" value="#000000">
-                    <label>
-                        <input type="checkbox" id="shadow-checkbox">
-                        添加阴影
-                    </label>
-                    <!-- 水印选择预览 -->
-                    <h4>水印选择</h4>
-                    <div id="watermark-preview-container">
-                        <!-- 水印预览滑动框 -->
+                    <button type="button" class="collapsible active"><i class="fas fa-signature"></i> 签名设置</button>
+                    <div class="content show">
+                        <label>签名颜色：</label>
+                        <button id="color-black-button" class="small-button"><i class="fas fa-tint"></i> 黑色</button>
+                        <button id="color-white-button" class="small-button"><i class="fas fa-tint"></i> 白色</button>
+                        <label for="color-picker">自定义颜色：</label>
+                        <input type="color" id="color-picker" value="#000000">
+                        <label>
+                            <input type="checkbox" id="shadow-checkbox">
+                            添加阴影
+                        </label>
+                        <!-- 水印选择预览 -->
+                        <h4>水印选择</h4>
+                        <div id="watermark-preview-container">
+                            <!-- 水印预览滑动框 -->
+                        </div>
                     </div>
                 </div>
                 <!-- 预设管理 -->
                 <div class="control-group">
-                    <h3><i class="fas fa-save"></i> 预设管理</h3>
-                    <label for="preset-name-input">预设名称：</label>
-                    <input type="text" id="preset-name-input" placeholder="输入预设名称">
-                    <div class="button-group">
-                        <button id="save-preset-button" class="small-button"><i class="fas fa-save"></i> 保存预设</button>
-                        <button id="export-preset-button" class="small-button"><i class="fas fa-file-export"></i> 导出预设</button>
+                    <button type="button" class="collapsible active"><i class="fas fa-save"></i> 预设管理</button>
+                    <div class="content show">
+                        <label for="preset-name-input">预设名称：</label>
+                        <input type="text" id="preset-name-input" placeholder="输入预设名称">
+                        <div class="button-group">
+                            <button id="save-preset-button" class="small-button"><i class="fas fa-save"></i> 保存预设</button>
+                            <button id="export-preset-button" class="small-button"><i class="fas fa-file-export"></i> 导出预设</button>
+                        </div>
+                        <label for="preset-select">选择预设：</label>
+                        <select id="preset-select">
+                            <option value="">选择预设</option>
+                        </select>
+                        <div class="button-group">
+                            <button id="load-preset-button" class="small-button"><i class="fas fa-folder-open"></i> 加载预设</button>
+                            <button id="delete-preset-button" class="small-button"><i class="fas fa-trash-alt"></i> 删除预设</button>
+                            <button id="import-preset-button" class="small-button"><i class="fas fa-file-import"></i> 导入预设</button>
+                        </div>
+                        <input type="file" id="preset-import-input" accept=".json">
+                        <button id="apply-previous-button" class="small-button"><i class="fas fa-copy"></i> 使用上一张照片设置</button>
+                        <button id="apply-all-button" class="small-button"><i class="fas fa-clone"></i> 应用到全部</button>
                     </div>
-                    <label for="preset-select">选择预设：</label>
-                    <select id="preset-select">
-                        <option value="">选择预设</option>
-                    </select>
-                    <div class="button-group">
-                        <button id="load-preset-button" class="small-button"><i class="fas fa-folder-open"></i> 加载预设</button>
-                        <button id="delete-preset-button" class="small-button"><i class="fas fa-trash-alt"></i> 删除预设</button>
-                        <button id="import-preset-button" class="small-button"><i class="fas fa-file-import"></i> 导入预设</button>
-                    </div>
-                    <input type="file" id="preset-import-input" accept=".json">
-                    <button id="apply-previous-button" class="small-button"><i class="fas fa-copy"></i> 使用上一张照片设置</button>
-                    <button id="apply-all-button" class="small-button"><i class="fas fa-clone"></i> 应用到全部</button>
                 </div>
             </div>
         </div>
@@ -754,6 +844,8 @@
     <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
     <!-- 引入 Fabric.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
+    <!-- 引入 FontFaceObserver.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fontfaceobserver/2.1.0/fontfaceobserver.standalone.js"></script>
 
     <script>
             // 全局变量
@@ -1360,8 +1452,10 @@
 
             function saveWatermark(dataUrl) {
                 let watermarks = JSON.parse(localStorage.getItem('watermarks')) || [];
-                watermarks.push(dataUrl);
-                localStorage.setItem('watermarks', JSON.stringify(watermarks));
+                if (!watermarks.includes(dataUrl)) {  // 检查是否已存在相同水印
+                    watermarks.push(dataUrl);
+                    localStorage.setItem('watermarks', JSON.stringify(watermarks));
+                }
             }
 
             function updateWatermarkList() {
@@ -1454,35 +1548,38 @@
                 document.body.removeChild(a);
             }
 
-            // 绘制水印功能
-            document.getElementById('draw-watermark-button').addEventListener('click', () => {
-                showDrawingCanvas();
+        // 绘制水印功能
+        document.getElementById('draw-watermark-button').addEventListener('click', () => {
+            showDrawingCanvas();
+        });
+
+        function showDrawingCanvas() {
+            const modal = document.getElementById('draw-watermark-modal');
+            modal.style.display = 'block';
+
+            const canvas = document.getElementById('drawing-canvas');
+            canvas.width = 500; // 设置画布宽度为500
+            canvas.height = 500; // 设置画布高度为500
+
+            const signaturePad = new SignaturePad(canvas);
+
+            document.getElementById('save-drawing-button').addEventListener('click', function() {
+                if (signaturePad.isEmpty()) {
+                    alert('请先绘制签名。');
+                    return;
+                }
+                const dataUrl = signaturePad.toDataURL('image/png');
+                saveWatermark(dataUrl);
+                updateWatermarkList();
+                signaturePad.clear();
+                modal.style.display = 'none';
             });
 
-            function showDrawingCanvas() {
-                const modal = document.getElementById('draw-watermark-modal');
-                modal.style.display = 'block';
-
-                const canvas = document.getElementById('drawing-canvas');
-                const signaturePad = new SignaturePad(canvas);
-
-                document.getElementById('save-drawing-button').addEventListener('click', function() {
-                    if (signaturePad.isEmpty()) {
-                        alert('请先绘制签名。');
-                        return;
-                    }
-                    const dataUrl = signaturePad.toDataURL('image/png');
-                    saveWatermark(dataUrl);
-                    updateWatermarkList();
-                    signaturePad.clear();
-                    modal.style.display = 'none';
-                });
-
-                document.getElementById('cancel-drawing-button').addEventListener('click', function() {
-                    signaturePad.clear();
-                    modal.style.display = 'none';
-                });
-            }
+            document.getElementById('cancel-drawing-button').addEventListener('click', function() {
+                signaturePad.clear();
+                modal.style.display = 'none';
+            });
+        }
 
             // 文字水印功能
             document.getElementById('text-watermark-button').addEventListener('click', () => {
@@ -1493,39 +1590,71 @@
                 const modal = document.getElementById('text-watermark-modal');
                 modal.style.display = 'block';
 
-                document.getElementById('save-text-button').addEventListener('click', function() {
-                    const text = document.getElementById('text-watermark-input').value.trim();
-                    const font = document.getElementById('font-select').value;
-                    const fontSize = document.getElementById('font-size-input').value;
-                    if (text) {
-                        generateTextWatermark(text, font, fontSize);
-                        modal.style.display = 'none';
-                    } else {
-                        alert('请输入文字内容。');
-                    }
-                });
+                // 先移除以前的事件监听器，防止重复绑定
+                const saveButton = document.getElementById('save-text-button');
+                saveButton.removeEventListener('click', saveTextWatermark);
 
+                // 添加事件监听器
+                saveButton.addEventListener('click', saveTextWatermark);
+
+                // 取消按钮的事件监听器（只需绑定一次）
                 document.getElementById('cancel-text-button').addEventListener('click', function() {
                     modal.style.display = 'none';
                 });
             }
 
+            // 单独定义保存水印的处理逻辑
+            function saveTextWatermark() {
+                const text = document.getElementById('text-watermark-input').value.trim();
+                const font = document.getElementById('font-select').value;
+                const fontSize = document.getElementById('font-size-input').value;
+                if (text) {
+                    generateTextWatermark(text, font, fontSize);
+                    document.getElementById('text-watermark-modal').style.display = 'none';
+                } else {
+                    alert('请输入文字内容。');
+                }
+            }
+
             function generateTextWatermark(text, fontFamily, fontSize) {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                ctx.font = `${fontSize}px "${fontFamily}"`;
-                ctx.fillStyle = '#000';
-                const textWidth = ctx.measureText(text).width;
-                canvas.width = textWidth;
-                canvas.height = parseInt(fontSize) + 10;
-                ctx.font = `${fontSize}px "${fontFamily}"`;
-                ctx.fillStyle = '#000';
-                ctx.textBaseline = 'top';
-                ctx.fillText(text, 0, 0);
+                canvas.width = 500;
+                canvas.height = 500;
 
-                const dataUrl = canvas.toDataURL('image/png');
-                saveWatermark(dataUrl);
-                updateWatermarkList();
+                // 创建 FontFaceObserver 实例并等待字体加载
+                const fontObserver = new FontFaceObserver(fontFamily);
+
+                fontObserver.load().then(() => {
+                    // 确保字体加载后再设置字体
+                    ctx.font = `${fontSize}px "${fontFamily}"`;
+                    ctx.fillStyle = '#000';
+                    const textWidth = ctx.measureText(text).width;
+                    const textHeight = parseInt(fontSize);  // 大致的文本高度
+
+                    // 计算居中的起始位置
+                    const x = (canvas.width - textWidth) / 2;
+                    const y = (canvas.height - textHeight) / 2;
+
+                    // 绘制文字水印居中
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(text, x, y);
+
+                    // 获取水印图像数据
+                    const dataUrl = canvas.toDataURL('image/png');
+
+                    // 防止重复保存水印，移除之前的水印
+                    if (watermarkImages.length > 0) {
+                        watermarkImages.pop();
+                    }
+
+                    // 保存水印并更新水印列表
+                    saveWatermark(dataUrl);
+                    updateWatermarkList();
+                }).catch(error => {
+                    console.error("字体加载失败：", error);
+                    alert("字体加载失败，请重试。");
+                });
             }
 
             // 更新水印预览
@@ -1673,8 +1802,12 @@
             }
 
             function setColorOption(colorHex) {
+                if (!canvasList[currentIndex]) {
+                    console.warn('currentIndex is not initialized or canvasList[currentIndex] is undefined');
+                    return;
+                }
                 const params = canvasList[currentIndex];
-                const previousColor = params.colorHex;
+                const previousColor = params.colorHex || "#000000"; // 默认值为黑色
                 params.colorHex = colorHex;
 
                 // 更新颜色选择器的值
@@ -2022,7 +2155,17 @@
             }
 
             function initializeSwiper() {
+                const swiperContainer = document.querySelector('.swiper-container');
                 const swiperWrapper = document.querySelector('.swiper-wrapper');
+
+                // 检查是否有图片
+                if (canvasList.length === 0) {
+                    swiperContainer.style.display = 'none'; // 隐藏画布容器
+                    return; // 直接退出函数
+                } else {
+                    swiperContainer.style.display = 'block'; // 显示画布容器
+                }
+
                 swiperWrapper.innerHTML = '';
 
                 canvasList.forEach((item, index) => {
@@ -2030,9 +2173,6 @@
                     slide.className = 'swiper-slide';
                     slide.appendChild(item.canvas);
                     swiperWrapper.appendChild(slide);
-
-                    // 初始化手势操作
-                    initializeGestures(item, index);
                 });
 
                 swiper = new Swiper('.swiper-container', {
@@ -2040,7 +2180,12 @@
                     pagination: {
                         el: '.swiper-pagination',
                     },
-                    autoHeight: true, // 启用自动高度
+                    autoHeight: true,
+                    simulateTouch: false, // 禁用鼠标拖动
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
                     on: {
                         slideChange: function () {
                             currentIndex = swiper.activeIndex;
@@ -2049,6 +2194,20 @@
                         },
                     },
                 });
+
+                // 检查图片数量并设置导航按钮的显示状态
+                const nextButton = document.querySelector('.swiper-button-next');
+                const prevButton = document.querySelector('.swiper-button-prev');
+
+                if (canvasList.length <= 1) {
+                    // 隐藏导航按钮
+                    nextButton.style.display = 'none';
+                    prevButton.style.display = 'none';
+                } else {
+                    // 显示导航按钮
+                    nextButton.style.display = 'block';
+                    prevButton.style.display = 'block';
+                }
             }
 
             function initializeGestures(params, index) {
